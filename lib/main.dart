@@ -8,6 +8,7 @@ import 'package:grupo_casadecor/routes.dart';
 import 'package:grupo_casadecor/shared/screens/login.dart';
 import 'package:grupo_casadecor/shared/screens/register_especificador.dart';
 import 'package:grupo_casadecor/shared/theme/theme.dart';
+import 'package:grupo_casadecor/web/home_landing.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,13 +23,13 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
       initialRoute: kIsWeb ? Routes.home : Routes.splashscreen,
       onGenerateRoute: (RouteSettings settings) {
         return Routes.fadeThrough(settings, (context) {
           switch (settings.name) {
             case Routes.home:
-              return const SplashScreen();
+              return const HomeLandingPage();
             case Routes.splashscreen:
               return const SplashScreen();
             case Routes.main_navigation:

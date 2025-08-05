@@ -150,17 +150,12 @@ class AdministradorController {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? token = sharedPreferences.getString('token');
 
-    if (token == null) {
-      if (kDebugMode) print('Token não encontrado');
-      return null;
-    }
-
     // Corrigir a URL como feito em getGetUser
     var url = Uri.https("apicasadecor.com", "/api/especificador/$token");
 
     // Corrigir headers (sem o "Token ")
     Map<String, String> headers = {
-      'Authorization': token,
+      'Authorization': token ?? '',
       'content-type': 'application/json',
     };
 

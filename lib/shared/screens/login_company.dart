@@ -34,7 +34,7 @@ class _LoginCompanyState extends State<LoginCompany> {
   verToken() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? token = sharedPreferences.getString('token');
-    if (token != null && kDebugMode) {
+    if (kDebugMode) {
       if (kDebugMode) {
         print('Token: $token');
       }
