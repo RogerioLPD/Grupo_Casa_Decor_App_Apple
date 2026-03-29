@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +36,9 @@ class AuthService {
         if (json.containsKey('token') && (json['token'] as String).isNotEmpty) {
           String token = json['token'];
           await sharedPreferences.setString('token', "Token $token");
+          if (kDebugMode) {
+            print("TOKEN: $token");
+          }
           await _buscarUsuarioETrocarRota(token);
           return true;
         } else {
@@ -74,14 +79,14 @@ class AuthService {
         }
 
         if (segmento.toUpperCase() == 'ADMIN') {
-          Navigator.pushReplacementNamed(context, Routes.terms);
+          Navigator.pushReplacementNamed(context, Routes.homeAdm);
         } else if (tipo.toUpperCase() == 'EMPRESA') {
-          Navigator.pushReplacementNamed(context, Routes.privacy);
+          Navigator.pushReplacementNamed(context, Routes.homeCompany);
         } else if (tipo.toUpperCase() == 'ESPECIFICADOR') {
           Navigator.pushReplacementNamed(context, Routes.main_navigation);
         } else {
           _mostrarErro("Tipo de usuário não reconhecido.");
-          Navigator.pushReplacementNamed(context, Routes.registerEspecificador);
+          Navigator.pushReplacementNamed(context, Routes.login);
         }
       } else {
         _mostrarErro("Erro ao buscar dados do usuário.");

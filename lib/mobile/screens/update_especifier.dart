@@ -1,9 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:grupo_casadecor/mobile/models/user_details.dart';
-import 'package:grupo_casadecor/shared/services/administrator_controller.dart';
 import 'package:grupo_casadecor/shared/services/specifier_controller.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -19,7 +20,6 @@ class UpdateEspecificador extends StatefulWidget {
 }
 
 class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerProviderStateMixin {
-  final AdministradorController _controller = AdministradorController();
   final _formKey = GlobalKey<FormState>();
 
   final _seguimentoController = TextEditingController();
@@ -40,7 +40,8 @@ class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerPr
   final ImagePicker _picker = ImagePicker();
 
   var regexTextAnNumber = FilteringTextInputFormatter.allow(
-      RegExp(r'[a-zA-Z0-9 àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ]'));
+    RegExp(r'[a-zA-Z0-9 àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ]'),
+  );
   var regexNumberOnly = FilteringTextInputFormatter.allow(RegExp(r'[0-9]'));
 
   @override
@@ -52,13 +53,15 @@ class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerPr
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut));
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut));
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut));
 
     _animationController.forward();
 
@@ -70,14 +73,14 @@ class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerPr
 
     widget.controller.userController.stream.first.then((user) {
       setState(() {
-        _seguimentoController.text = user.segment ?? '';
-        _telefoneController.text = user.phone ?? '';
-        _celularController.text = user.cellPhone ?? '';
-        _enderecoController.text = user.address ?? '';
-        _numeroController.text = user.number ?? '';
-        _bairroController.text = user.district ?? '';
-        _cidadeController.text = user.city ?? '';
-        _estadoController.text = user.state ?? '';
+        _seguimentoController.text = user?.segment ?? '';
+        _telefoneController.text = user?.phone ?? '';
+        _celularController.text = user?.cellPhone ?? '';
+        _enderecoController.text = user?.address ?? '';
+        _numeroController.text = user?.number ?? '';
+        _bairroController.text = user?.district ?? '';
+        _cidadeController.text = user?.city ?? '';
+        _estadoController.text = user?.state ?? '';
       });
     }).catchError((e) {
       //log('Erro ao carregar usuário: $e');
@@ -141,7 +144,7 @@ class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerPr
                         Stack(
                           alignment: Alignment.bottomRight,
                           children: [
-                            StreamBuilder<UserDetails>(
+                            StreamBuilder<UserDetails?>(
                               stream: widget.controller.userController.stream,
                               builder: (context, snapshot) {
                                 final user = snapshot.data;
@@ -170,8 +173,11 @@ class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerPr
                                           (user == null ||
                                               user.photo == null ||
                                               user.photo!.isEmpty))
-                                      ? Icon(Icons.person,
-                                          size: 60, color: theme.colorScheme.onPrimaryContainer)
+                                      ? Icon(
+                                          Icons.person,
+                                          size: 60,
+                                          color: theme.colorScheme.onPrimaryContainer,
+                                        )
                                       : null,
                                 );
                               },
@@ -254,7 +260,7 @@ class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerPr
                                 controller: _enderecoController,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(20),
-                                  regexTextAnNumber
+                                  regexTextAnNumber,
                                 ],
                                 decoration: const InputDecoration(
                                   labelText: 'Endereço',
@@ -290,7 +296,7 @@ class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerPr
                                 controller: _bairroController,
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(20),
-                                  regexTextAnNumber
+                                  regexTextAnNumber,
                                 ],
                                 decoration: const InputDecoration(
                                   labelText: 'Bairro',
@@ -336,8 +342,9 @@ class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerPr
                             icon: const Icon(Icons.update),
                             label: Text(
                               'Atualizar',
-                              style:
-                                  theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -360,8 +367,10 @@ class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerPr
                                   photo: _currentImageUrl,
                                 );
 
-                                final success = await widget.controller
-                                    .updateUserData(updatedUser, imageFile: _pickedImage);
+                                final success = await widget.controller.updateUserData(
+                                  updatedUser,
+                                  imageFile: _pickedImage,
+                                );
 
                                 if (success) {
                                   if (!mounted) return;
@@ -383,8 +392,9 @@ class _UpdateEspecificadorState extends State<UpdateEspecificador> with TickerPr
                             onPressed: () => Navigator.pop(context),
                             child: Text(
                               'VOLTAR',
-                              style:
-                                  theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),

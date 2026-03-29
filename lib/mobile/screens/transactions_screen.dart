@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 class TransactionsScreen extends StatefulWidget {
   final SpecifierController controller;
+
   const TransactionsScreen({super.key, required this.controller});
 
   @override
@@ -20,13 +21,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> with TickerProv
   void initState() {
     super.initState();
 
+    _transactionsFuture = ReleasesController().fetchTransactions();
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     )..forward();
 
-    _transactionsFuture = ReleasesController().fetchTransactions();
-
+    // Inicializa os streams do controller
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.controller.initValues();
     });
@@ -51,93 +53,91 @@ class _TransactionsScreenState extends State<TransactionsScreen> with TickerProv
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: FutureBuilder<List<PointTransaction>>(
-        future: _transactionsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text('Erro: ${snapshot.error}'));
-          }
-
-          final transactions = snapshot.data ?? [];
-
-          return Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.primary,
-                      theme.colorScheme.primaryContainer,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Aqui usamos StreamBuilder direto no controller para mostrar o saldo atualizado
-                    StreamBuilder<double>(
-                      stream: widget.controller.pointsController.stream,
-                      builder: (context, snapshot) {
-                        final points = snapshot.data ?? 0.0;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Saldo Total',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${points.toStringAsFixed(0)} pts',
-                              style: theme.textTheme.headlineMedium?.copyWith(
-                                color: theme.colorScheme.onPrimary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    Icon(
-                      Icons.account_balance_wallet,
-                      size: 40,
-                      color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
-                    ),
-                  ],
-                ),
+      body: Column(
+        children: [
+          // --- Saldo Total ---
+          Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [theme.colorScheme.primary, theme.colorScheme.primaryContainer],
               ),
-              Expanded(
-                child: ListView.builder(
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.primary.withAlpha(80),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                StreamBuilder<double>(
+                  stream: widget.controller.pointsController.stream,
+                  initialData: widget.controller.pointsController.valueOrNull ?? 0.0,
+                  builder: (context, snapshot) {
+                    final points = snapshot.data ?? 0.0;
+                    final displayPoints = ((points * 100).truncate() / 100).toStringAsFixed(2);
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Saldo Total',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onPrimary.withAlpha(200),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$displayPoints pts',
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            color: theme.colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Icon(
+                  Icons.account_balance_wallet,
+                  size: 40,
+                  color: theme.colorScheme.onPrimary.withAlpha(200),
+                ),
+              ],
+            ),
+          ),
+
+          // --- Lista de Transações ---
+          Expanded(
+            child: FutureBuilder<List<PointTransaction>>(
+              future: _transactionsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('Erro: ${snapshot.error}'));
+                }
+
+                final transactions = snapshot.data ?? [];
+
+                return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
                     final transaction = transactions[index];
 
-                    final animationValue = Tween<double>(
-                      begin: 0.0,
-                      end: 1.0,
-                    ).animate(
+                    // Animação para cada item
+                    final animationValue = Tween<double>(begin: 0.0, end: 1.0).animate(
                       CurvedAnimation(
                         parent: _animationController,
-                        curve: Interval(index * 0.1, 1.0, curve: Curves.easeOut),
+                        curve: Interval(index * 0.05, 1.0, curve: Curves.easeOut),
                       ),
                     );
 
@@ -154,11 +154,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> with TickerProv
                       },
                     );
                   },
-                ),
-              ),
-            ],
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -178,9 +178,7 @@ class TransactionCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -205,9 +203,7 @@ class TransactionCard extends StatelessWidget {
                   children: [
                     Text(
                       transaction.description,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 4),
                     Text(

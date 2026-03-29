@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_interpolation_to_compose_strings
+// ignore_for_file: prefer_interpolation_to_compose_strings, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:grupo_casadecor/shared/models/login_form_layout.dart';
@@ -7,7 +7,7 @@ import 'package:grupo_casadecor/shared/services/login_controller.dart';
 import '../../routes.dart';
 
 class LoginEspecificador extends StatefulWidget {
-  const LoginEspecificador({Key? key}) : super(key: key);
+  const LoginEspecificador({super.key});
 
   @override
   State<LoginEspecificador> createState() => _LoginEspecificadorState();
@@ -48,7 +48,10 @@ class _LoginEspecificadorState extends State<LoginEspecificador> {
       body: WillPopScope(
         onWillPop: () async {
           Navigator.pushNamedAndRemoveUntil(
-              context, Routes.main_navigation, (Route<dynamic> route) => false);
+            context,
+            Routes.main_navigation,
+            (Route<dynamic> route) => false,
+          );
           return true;
         },
         child: LoginLayoutResponsivo(

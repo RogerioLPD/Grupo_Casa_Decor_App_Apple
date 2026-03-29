@@ -67,6 +67,38 @@ class RewardsController extends GetxController {
     }
   }
 
+  Future<void> deleteReward(RewardModel reward) async {
+    _setLoading(true);
+    _setError('');
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token') ?? '';
+
+      if (token.isEmpty) {
+        _setError('Usuário não autenticado.');
+        _setLoading(false);
+        return;
+      }
+
+      final response = await http.delete(
+        Uri.parse('$apiUrl${reward.id.toString()}/'), // aqui convertemos para String
+        headers: {'Authorization': token, 'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 204) {
+        // sucesso
+        awardsList.removeWhere((r) => r.id == reward.id);
+      } else {
+        _setError('Erro ao deletar prêmio. Código: ${response.statusCode}');
+      }
+    } catch (e) {
+      _setError('Erro na requisição: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   void _setLoading(bool value) {
     isLoading.value = value;
     _loadingController.add(value);

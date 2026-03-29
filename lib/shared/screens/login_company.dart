@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:grupo_casadecor/shared/models/login_form_layout.dart';
@@ -7,7 +9,7 @@ import '../../routes.dart';
 // Importa o novo serviço de login
 
 class LoginCompany extends StatefulWidget {
-  const LoginCompany({Key? key}) : super(key: key);
+  const LoginCompany({super.key});
 
   @override
   State<LoginCompany> createState() => _LoginCompanyState();

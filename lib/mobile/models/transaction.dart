@@ -3,8 +3,8 @@ enum TransactionType { earned, spent }
 class PointTransaction {
   final String id;
   final String description;
-  final int points;
-  final int valor; // valor também como int
+  final double points; // ✅ agora é double
+  final double valor; // ✅ agora é double
   final DateTime date;
   final TransactionType type;
   final String companyName;
@@ -20,15 +20,19 @@ class PointTransaction {
   });
 
   factory PointTransaction.fromJson(Map<String, dynamic> json) {
-    int valorInt = double.tryParse(json['valor']?.toString() ?? '0')?.round() ?? 0;
+    // Converte o valor corretamente mantendo 2 casas decimais
+    final valorDouble = double.tryParse(json['valor']?.toString() ?? '0') ?? 0.0;
+    final formattedValor = double.parse(valorDouble.toStringAsFixed(2)); // ✅ Precisão garantida
 
     return PointTransaction(
       id: json['id']?.toString() ?? '',
       description: json['descricao']?.toString() ?? '',
-      valor: valorInt,
-      points: valorInt,
-      date: DateTime.parse(json['data_compra']?.toString() ?? DateTime.now().toIso8601String())
-          .toLocal(),
+      valor: formattedValor, // ✅ mantém double
+      points: formattedValor, // ✅ mantém double
+      date:
+          DateTime.parse(
+            json['data_compra']?.toString() ?? DateTime.now().toIso8601String(),
+          ).toLocal(),
       type: _parseType(json['tipo']?.toString()),
       companyName: json['empresa']?['nome']?.toString() ?? '',
     );

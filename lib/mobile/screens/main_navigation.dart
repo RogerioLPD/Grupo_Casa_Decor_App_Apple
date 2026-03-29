@@ -32,9 +32,7 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
       TransactionsScreen(controller: controller), // E aqui também
       const CompaniesScreen(),
       RewardsScreen(controller: controller),
-      ProfileScreen(
-        controller: controller,
-      ),
+      ProfileScreen(controller: controller),
     ];
 
     _pageController = PageController();

@@ -11,17 +11,14 @@ class AboutSection extends StatelessWidget {
     final isDesktop = size.width > 768;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? 80 : 20,
-        vertical: 100,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 80 : 20, vertical: 100),
       color: theme.colorScheme.surface,
       child: AnimatedSection(
         child: Column(
           children: [
             // Section Title
             Text(
-              'SOBRE O PROGRAMA',
+              'SOBRE NÓS',
               style: theme.textTheme.headlineSmall?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w600,
@@ -58,7 +55,7 @@ class AboutSection extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'O Grupo Casa Decor revoluciona a experiência de compra para arquitetos, oferecendo um sistema de pontuação exclusivo que transforma cada aquisição em uma oportunidade de crescimento profissional.',
+                        'Apresentamos a nova empresa da Grupo Casa Decor Ltda., o Grupo Casa Decor que é um programa de reconhecimento a profissionais da área da arquitetura, construção e decoração. O Grupo Casa Decor é um programa de relacionamento entre lojas do Grupo e profissionais da área, que levará arquitetos, decoradores e designers de interiores para conhecer lugares incríveis pelo Brasil e pelo mundo, como um incentivo à cultura, e conhecimento técnico através do circuito de compras entre as lojas do Grupo, uma oportunidade única para vivenciar intensamente cada destino e de tornar a viagem uma experiência inspiradora. Além das viagens é realizado palestras, workshops, e outras ações, como forma de gerar aproximação entre empresas participantes e profissionais.',
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                           height: 1.6,
@@ -66,7 +63,7 @@ class AboutSection extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Através de parcerias estratégicas com as melhores lojas do setor, conectamos profissionais da arquitetura a produtos premium, materiais de qualidade superior e soluções inovadoras.',
+                        'O objetivo desse projeto é fortalecer o segmento de Arquitetura, construção e decoração através da união das empresas do Núcleo com os especificados, e como fruto oferecer produtos e serviços cada vez melhores aos seus clientes através da intermediação dos profissionais que também fazem parte do Grupo Casa Decor.',
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                           height: 1.6,
@@ -83,11 +80,7 @@ class AboutSection extends StatelessWidget {
                             icon: Icons.people,
                           ),
                           SizedBox(width: 20),
-                          _StatCard(
-                            number: '50+',
-                            label: 'Lojas\nParceiras',
-                            icon: Icons.store,
-                          ),
+                          _StatCard(number: '50+', label: 'Lojas\nParceiras', icon: Icons.store),
                           SizedBox(width: 20),
                           _StatCard(
                             number: '1000+',
@@ -119,8 +112,8 @@ class AboutSection extends StatelessWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Image.network(
-                          'https://pixabay.com/get/g3143dfddad35568a59c6b2d788b42bdcb4d32a4feea4af927db6487bd1763f65c7b1fdc58a443e527951947d8a3eec809e08ce18829403999e15c461bf6aa2a2_1280.jpg',
+                        child: Image.asset(
+                          'assets/images/about.jpg',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) => Container(
                             decoration: BoxDecoration(
@@ -152,11 +145,7 @@ class _StatCard extends StatefulWidget {
   final String label;
   final IconData icon;
 
-  const _StatCard({
-    required this.number,
-    required this.label,
-    required this.icon,
-  });
+  const _StatCard({required this.number, required this.label, required this.icon});
 
   @override
   State<_StatCard> createState() => _StatCardState();
@@ -170,13 +159,11 @@ class _StatCardState extends State<_StatCard> with SingleTickerProviderStateMixi
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _controller = AnimationController(duration: const Duration(milliseconds: 200), vsync: this);
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -208,18 +195,11 @@ class _StatCardState extends State<_StatCard> with SingleTickerProviderStateMixi
                   ? theme.colorScheme.primaryContainer.withValues(alpha: 0.1)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                width: 1,
-              ),
+              border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.2), width: 1),
             ),
             child: Column(
               children: [
-                Icon(
-                  widget.icon,
-                  size: 32,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(widget.icon, size: 32, color: theme.colorScheme.primary),
                 const SizedBox(height: 12),
                 Text(
                   widget.number,

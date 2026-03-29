@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:grupo_casadecor/mobile/models/acquisitions_item.dart';
@@ -9,11 +8,13 @@ import 'package:grupo_casadecor/mobile/models/user_details.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:rxdart/rxdart.dart';
 
 class SpecifierController {
-  final StreamController<List<AcquisitionsItem>> detailsController = StreamController.broadcast();
-  final StreamController<double> pointsController = StreamController.broadcast();
-  final StreamController<UserDetails> userController = StreamController.broadcast();
+  // BehaviorSubjects com valor inicial
+  final BehaviorSubject<List<AcquisitionsItem>> detailsController = BehaviorSubject.seeded([]);
+  final BehaviorSubject<double> pointsController = BehaviorSubject.seeded(0.0);
+  final BehaviorSubject<UserDetails?> userController = BehaviorSubject.seeded(null);
 
   final PageController pageController = PageController(initialPage: 0);
 
@@ -25,6 +26,7 @@ class SpecifierController {
     detailsController.close();
     pointsController.close();
     userController.close();
+    pageController.dispose();
   }
 
   initValues() async {
@@ -37,7 +39,6 @@ class SpecifierController {
     String? token = sharedPreferences.getString('token');
 
     var url = Uri.https("apicasadecor.com", "/api/compras-especificador/");
-
     Map<String, String> headers = {
       'Authorization': token ?? '',
       'content-type': 'application/json',
@@ -45,9 +46,7 @@ class SpecifierController {
 
     try {
       var response = await http.get(url, headers: headers);
-      if (kDebugMode) {
-        print('Response ${response.body}');
-      }
+      if (kDebugMode) print('Response ${response.body}');
 
       if (response.statusCode == 200) {
         List<AcquisitionsItem> item = (jsonDecode(utf8.decode(response.bodyBytes)) as List)
@@ -56,12 +55,10 @@ class SpecifierController {
 
         double valueTotal = item.fold(0.0, (sum, data) => sum + double.parse(data.valor!));
 
-        pointsController.sink.add(valueTotal);
-        detailsController.sink.add(item);
+        pointsController.add(valueTotal); // atualiza saldo
+        detailsController.add(item); // atualiza lista de compras
       } else {
-        if (kDebugMode) {
-          print('Erro ${response.statusCode} ao buscar dados de compras');
-        }
+        if (kDebugMode) print('Erro ${response.statusCode} ao buscar dados de compras');
       }
     } catch (e) {
       log(e.toString());
@@ -73,11 +70,32 @@ class SpecifierController {
     String token = sharedPreferences.getString('token')!;
 
     var url = Uri.https("apicasadecor.com", "/api/usuario/$token");
+    Map<String, String> headers = {'Authorization': token, 'content-type': 'application/json'};
 
-    Map<String, String> headers = {
-      'Authorization': token,
-      'content-type': 'application/json',
-    };
+    try {
+      var response = await http.get(url, headers: headers);
+      if (kDebugMode) print('Response ${response.body}');
+
+      if (response.statusCode == 200) {
+        var jsonBody = jsonDecode(utf8.decode(response.bodyBytes));
+        UserDetails item = UserDetails.fromJson(jsonBody);
+        userController.add(item);
+      } else {
+        if (kDebugMode) print('Erro ao obter usuário: ${response.statusCode}');
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  Future<UserDetails?> getUser(String cpfOuCnpj) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String token = sharedPreferences.getString('token')!;
+
+    // Chama a API sem parâmetros, retorna lista completa de usuários
+    var url = Uri.https("apicasadecor.com", "/api/usuario/");
+
+    Map<String, String> headers = {'Authorization': token, 'content-type': 'application/json'};
 
     try {
       var response = await http.get(url, headers: headers);
@@ -87,16 +105,37 @@ class SpecifierController {
       }
 
       if (response.statusCode == 200) {
-        var jsonBody = jsonDecode(utf8.decode(response.bodyBytes));
-        UserDetails item = UserDetails.fromJson(jsonBody);
-        userController.sink.add(item);
+        // Decodifica o array de usuários
+        List<dynamic> jsonBody = jsonDecode(utf8.decode(response.bodyBytes));
+
+        // Procura o usuário que tenha CPF ou CNPJ igual ao informado
+        final match = jsonBody.firstWhere(
+          (e) =>
+              (e['cpf'] != null && e['cpf'].replaceAll(RegExp(r'\D'), '') == cpfOuCnpj) ||
+              (e['cnpj'] != null && e['cnpj'].replaceAll(RegExp(r'\D'), '') == cpfOuCnpj),
+          orElse: () => null,
+        );
+
+        if (match != null) {
+          UserDetails item = UserDetails.fromJson(match);
+
+          // publica no stream
+          userController.sink.add(item);
+
+          // retorna o usuário
+          return item;
+        } else {
+          return null; // não encontrou
+        }
       } else {
         if (kDebugMode) {
-          print('Erro ao obter usuário: ${response.statusCode}');
+          print('Erro ao obter usuários: ${response.statusCode}');
         }
+        return null;
       }
     } catch (e) {
       log(e.toString());
+      return null;
     }
   }
 
@@ -132,10 +171,7 @@ class SpecifierController {
     try {
       final response = await http.put(
         url,
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-        },
+        headers: {'Authorization': token, 'Content-Type': 'application/json'},
         body: jsonEncode(data),
       );
 

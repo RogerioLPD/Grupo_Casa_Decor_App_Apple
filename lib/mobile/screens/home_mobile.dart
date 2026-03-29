@@ -3,6 +3,8 @@ import 'package:grupo_casadecor/mobile/models/transaction.dart';
 import 'package:grupo_casadecor/mobile/models/user_details.dart';
 import 'package:grupo_casadecor/shared/services/releases_controller.dart';
 import 'package:grupo_casadecor/shared/services/specifier_controller.dart';
+import 'package:intl/intl.dart';
+
 import '../widgets/quick_actions_card.dart';
 import '../widgets/recent_activity_card.dart';
 import '../widgets/score.card.dart';
@@ -21,7 +23,7 @@ class _HomeMobileScreenState extends State<HomeMobileScreen> with TickerProvider
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  Future<List<PointTransaction>>? _transactionsFuture; // <-- adicionado
+  Future<List<PointTransaction>>? _transactionsFuture;
 
   @override
   void initState() {
@@ -29,7 +31,7 @@ class _HomeMobileScreenState extends State<HomeMobileScreen> with TickerProvider
 
     widget.controller.initValues();
 
-    _transactionsFuture = ReleasesController().fetchTransactions(); // <-- adicionado
+    _transactionsFuture = ReleasesController().fetchTransactions();
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
@@ -39,18 +41,12 @@ class _HomeMobileScreenState extends State<HomeMobileScreen> with TickerProvider
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut));
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut));
 
     _animationController.forward();
   }
@@ -70,7 +66,7 @@ class _HomeMobileScreenState extends State<HomeMobileScreen> with TickerProvider
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            StreamBuilder<UserDetails>(
+            StreamBuilder<UserDetails?>(
               stream: widget.controller.userController.stream,
               builder: (context, snapshot) {
                 final nome = snapshot.hasData
@@ -78,9 +74,7 @@ class _HomeMobileScreenState extends State<HomeMobileScreen> with TickerProvider
                     : 'Usuário';
                 return Text(
                   'Olá, $nome!',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                 );
               },
             ),
@@ -104,8 +98,7 @@ class _HomeMobileScreenState extends State<HomeMobileScreen> with TickerProvider
       body: RefreshIndicator(
         onRefresh: () async {
           setState(() {
-            _transactionsFuture =
-                ReleasesController().fetchTransactions(); // <-- atualiza no refresh
+            _transactionsFuture = ReleasesController().fetchTransactions();
           });
           _animationController.reset();
           _animationController.forward();
@@ -129,13 +122,9 @@ class _HomeMobileScreenState extends State<HomeMobileScreen> with TickerProvider
                       const SizedBox(height: 24),
                       Text(
                         'Atividade Recente',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 12),
-
-                      /// ✅ Substitui lista mockada por dados reais
                       FutureBuilder<List<PointTransaction>>(
                         future: _transactionsFuture,
                         builder: (context, snapshot) {
@@ -148,7 +137,6 @@ class _HomeMobileScreenState extends State<HomeMobileScreen> with TickerProvider
                           }
 
                           final transactions = snapshot.data ?? [];
-                          // Ordena do mais recente para o mais antigo pela data
                           transactions.sort((a, b) => b.date.compareTo(a.date));
                           final recentTransactions = transactions.take(3).toList();
 
@@ -177,7 +165,6 @@ class _HomeMobileScreenState extends State<HomeMobileScreen> with TickerProvider
                           );
                         },
                       ),
-
                       const SizedBox(height: 100),
                     ],
                   ),

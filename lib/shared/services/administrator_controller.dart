@@ -24,13 +24,19 @@ class AdministradorController {
   }) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? token = sharedPreferences.getString('token');
-    if (kDebugMode) {
-      print('TOKEN $token');
+
+    if (token!.isEmpty) {
+      log('Token não encontrado. Usuário não autenticado.');
+      return false;
     }
+
     String image = base64.encode(bytes!);
+
     var url = Uri.parse("https://apicasadecor.com/api/cadastro-empresa/");
     Map<String, String> headers = {
-      'Authorization': "Token $token",
+      'Authorization': token, // 🔹 usa exatamente como veio do login
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     };
 
     Map<String, dynamic> body = {
@@ -51,18 +57,18 @@ class AdministradorController {
     };
 
     try {
-      var response = await http.post(url, headers: headers, body: body);
+      var response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
       if (kDebugMode) {
-        print(response.body);
+        print('Status: ${response.statusCode}');
+        print('Body: ${response.body}');
       }
-      if (response.statusCode == 201) {
-        if (kDebugMode) {
-          print(response.body);
-        }
-        return true;
-      } else {
-        return false;
-      }
+
+      return response.statusCode == 201;
     } catch (e) {
       log(e.toString());
       return false;
@@ -70,37 +76,49 @@ class AdministradorController {
   }
 
   // Criar prêmio (sem alteração)
-  Future createRearward({
+  Future<bool> createReward({
     String? points,
     String? title,
     String? description,
     Uint8List? bytes,
   }) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String token = sharedPreferences.getString('token')!;
+    String? token = sharedPreferences.getString('token');
+
+    if (token!.isEmpty) {
+      log('Token não encontrado. Usuário não autenticado.');
+      return false;
+    }
+
     String image = base64.encode(bytes!);
+
     var url = Uri.parse("https://apicasadecor.com/api/premio/");
     Map<String, String> headers = {
-      'Authorization': "Token $token",
+      'Authorization': token, // exatamente como veio do login
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     };
 
     Map<String, dynamic> body = {
       "imagem_1": image,
       "pontos": points,
       "titulo": title,
-      "descricao": description
+      "descricao": description,
     };
 
     try {
-      var response = await http.post(url, headers: headers, body: body);
-      if (response.statusCode == 201) {
-        if (kDebugMode) {
-          print(response.body);
-        }
-        return true;
-      } else {
-        return false;
+      var response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      if (kDebugMode) {
+        print('Status: ${response.statusCode}');
+        print('Body: ${response.body}');
       }
+
+      return response.statusCode == 201;
     } catch (e) {
       log(e.toString());
       return false;
@@ -284,7 +302,7 @@ class AdministradorController {
 
     var url = Uri.parse("https://apicasadecor.com/api/usuario/$id/");
     Map<String, String> headers = {
-      'Authorization': token?.trim() ?? '',
+      'Authorization': token!.trim(),
     };
 
     try {

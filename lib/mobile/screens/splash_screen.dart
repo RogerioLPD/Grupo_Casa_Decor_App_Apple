@@ -53,42 +53,27 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _logoOpacity = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut));
 
     _logoScale = Tween<double>(
       begin: 0.3,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.elasticOut,
-    ));
+    ).animate(CurvedAnimation(parent: _scaleController, curve: Curves.elasticOut));
 
     _logoRotation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _rotationController,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(CurvedAnimation(parent: _rotationController, curve: Curves.easeInOut));
 
     _backgroundOpacity = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: Curves.easeIn,
-    ));
+    ).animate(CurvedAnimation(parent: _logoController, curve: Curves.easeIn));
 
     _logoSlide = Tween<Offset>(
       begin: const Offset(0, 0.5),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: Curves.easeOutBack,
-    ));
+    ).animate(CurvedAnimation(parent: _logoController, curve: Curves.easeOutBack));
   }
 
   void _startSplashSequence() async {
@@ -114,10 +99,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           pageBuilder: (context, animation, secondaryAnimation) => const OnboardingScreen(),
           transitionDuration: const Duration(milliseconds: 800),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
+            return FadeTransition(opacity: animation, child: child);
           },
         ),
       );
@@ -233,7 +215,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                       ],
                     ),
                   ),*/
-
                   const SizedBox(height: 60),
 
                   // Indicador de carregamento animado

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grupo_casadecor/shared/screens/login.dart';
 
 class HeroSection extends StatefulWidget {
   const HeroSection({super.key});
@@ -25,9 +26,10 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeOut));
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
@@ -54,7 +56,7 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 768;
+    final isDesktop = size.width > 900;
 
     return Container(
       height: size.height,
@@ -75,12 +77,10 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
           Positioned.fill(
             child: Opacity(
               opacity: 0.1,
-              child: Image.network(
-                'https://pixabay.com/get/g61158e5900f280ef3788352c4b2018263a6ced483d04a7fbf516653510a4e48353778a78cc93730132dbc06967d754f852af712e1e940b9f2394a65c4c18e7ba_1280.jpg',
+              child: Image.asset(
+                'assets/images/Fundo.jpg',
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.transparent,
-                ),
+                errorBuilder: (context, error, stackTrace) => Container(color: Colors.transparent),
               ),
             ),
           ),
@@ -88,10 +88,7 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
           // Content
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isDesktop ? 80 : 20,
-                vertical: 40,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 80 : 20, vertical: 40),
               child: Column(
                 children: [
                   const SizedBox(height: 100),
@@ -177,10 +174,7 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
       builder: (context, child) {
         return Transform.translate(
           offset: Offset(0, 20 * (1 - _fadeAnimation.value)),
-          child: Opacity(
-            opacity: _fadeAnimation.value,
-            child: Text(text, style: style),
-          ),
+          child: Opacity(opacity: _fadeAnimation.value, child: Text(text, style: style)),
         );
       },
     );
@@ -199,14 +193,14 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
                 _HeroButton(
                   text: 'Começar Agora',
                   isPrimary: true,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    );
+                  },
                 ),
                 const SizedBox(width: 16),
-                _HeroButton(
-                  text: 'Saiba Mais',
-                  isPrimary: false,
-                  onPressed: () {},
-                ),
               ],
             ),
           ),
@@ -220,9 +214,7 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
       children: [
         Text(
           'Role para descobrir',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: Colors.white.withValues(alpha: 0.7),
-          ),
+          style: theme.textTheme.bodySmall?.copyWith(color: Colors.white.withValues(alpha: 0.7)),
         ),
         const SizedBox(height: 8),
         AnimatedBuilder(
@@ -248,11 +240,7 @@ class _HeroButton extends StatefulWidget {
   final bool isPrimary;
   final VoidCallback onPressed;
 
-  const _HeroButton({
-    required this.text,
-    required this.isPrimary,
-    required this.onPressed,
-  });
+  const _HeroButton({required this.text, required this.isPrimary, required this.onPressed});
 
   @override
   State<_HeroButton> createState() => _HeroButtonState();
@@ -261,7 +249,6 @@ class _HeroButton extends StatefulWidget {
 class _HeroButtonState extends State<_HeroButton> with SingleTickerProviderStateMixin {
   late AnimationController _hoverController;
   late Animation<double> _scaleAnimation;
-  bool _isHovered = false;
 
   @override
   void initState() {
@@ -270,9 +257,10 @@ class _HeroButtonState extends State<_HeroButton> with SingleTickerProviderState
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _hoverController, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _hoverController, curve: Curves.easeInOut));
   }
 
   @override
@@ -287,11 +275,9 @@ class _HeroButtonState extends State<_HeroButton> with SingleTickerProviderState
 
     return MouseRegion(
       onEnter: (_) {
-        setState(() => _isHovered = true);
         _hoverController.forward();
       },
       onExit: (_) {
-        setState(() => _isHovered = false);
         _hoverController.reverse();
       },
       child: ScaleTransition(
@@ -304,16 +290,12 @@ class _HeroButtonState extends State<_HeroButton> with SingleTickerProviderState
             side:
                 widget.isPrimary ? null : BorderSide(color: theme.colorScheme.secondary, width: 2),
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             elevation: widget.isPrimary ? 8 : 0,
           ),
           child: Text(
             widget.text,
-            style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
           ),
         ),
       ),
@@ -333,13 +315,11 @@ class _HeroImageWidgetState extends State<_HeroImageWidget> with SingleTickerPro
   @override
   void initState() {
     super.initState();
-    _floatController = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    );
-    _floatAnimation = Tween<double>(begin: -10, end: 10).animate(
-      CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
-    );
+    _floatController = AnimationController(duration: const Duration(seconds: 3), vsync: this);
+    _floatAnimation = Tween<double>(
+      begin: -10,
+      end: 10,
+    ).animate(CurvedAnimation(parent: _floatController, curve: Curves.easeInOut));
     _floatController.repeat(reverse: true);
   }
 
@@ -369,20 +349,16 @@ class _HeroImageWidgetState extends State<_HeroImageWidget> with SingleTickerPro
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                'https://pixabay.com/get/gc913c792a55891bcc01410cb3d54689690362eeea3f50dbe184c7a954c591ce04cb769ad1ef9d9cf2e9a966f474661be9fd68e081e036de9976adf139e1a9e2a_1280.jpg',
-                fit: BoxFit.cover,
+              child: Image.asset(
+                'assets/images/logolanding.png',
+                fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) => Container(
-                  height: 400,
+                  height: 450,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(
-                    Icons.home_work,
-                    size: 100,
-                    color: Colors.white,
-                  ),
+                  child: const Icon(Icons.home_work, size: 100, color: Colors.white),
                 ),
               ),
             ),

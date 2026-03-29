@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -40,22 +42,15 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut));
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.2),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOut));
 
     _animationController.forward();
 
@@ -157,10 +152,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
 
     if (image != null && widget.userDetails != null) {
-      final success = await widget.controller.updateUserData(
-        widget.userDetails!,
-        imageFile: image,
-      );
+      final success = await widget.controller.updateUserData(widget.userDetails!, imageFile: image);
 
       if (success) {
         setState(() {
@@ -202,12 +194,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              theme.colorScheme.primary,
-              theme.colorScheme.primaryContainer,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            colors: [theme.colorScheme.primary, theme.colorScheme.primaryContainer],
+            // begin: Alignment.topLeft,
+            // end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
         ),
@@ -251,11 +240,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.edit,
-                        size: 20,
-                        color: theme.colorScheme.onPrimary,
-                      ),
+                      child: Icon(Icons.edit, size: 20, color: theme.colorScheme.onPrimary),
                     ),
                   ),
                 ),
@@ -277,7 +262,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             StreamBuilder<double>(
               stream: widget.controller.pointsController.stream,
               builder: (context, snapshot) {
-                final totalPoints = snapshot.data ?? 0.0;
+                final totalPoints = double.parse((snapshot.data ?? 0.0).toStringAsFixed(2));
                 final userLevel = _getUserLevel(totalPoints);
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -308,15 +293,18 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             StreamBuilder<double>(
               stream: widget.controller.pointsController.stream,
               builder: (context, snapshot) {
-                final totalPoints = snapshot.data ?? 0.0;
+                final totalPoints = double.parse((snapshot.data ?? 0.0).toStringAsFixed(2));
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.account_balance_wallet,
-                        color: theme.colorScheme.onPrimary.withAlpha(200), size: 20),
+                    Icon(
+                      Icons.account_balance_wallet,
+                      color: theme.colorScheme.onPrimary.withAlpha(200),
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
-                      '${totalPoints.toStringAsFixed(0)} pontos',
+                      '${totalPoints.toStringAsFixed(2)} pontos',
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: theme.colorScheme.onPrimary,
                         fontWeight: FontWeight.w600,
@@ -336,11 +324,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 class ProfileStats extends StatelessWidget {
   final UserScore userScore;
   final SpecifierController controller;
-  const ProfileStats({
-    super.key,
-    required this.userScore,
-    required this.controller,
-  });
+  const ProfileStats({super.key, required this.userScore, required this.controller});
 
   int _getUserLevel(double totalPoints) {
     if (totalPoints >= 1000) return 5;
@@ -356,9 +340,7 @@ class ProfileStats extends StatelessWidget {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -366,9 +348,7 @@ class ProfileStats extends StatelessWidget {
           children: [
             Text(
               'Estatísticas',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -377,11 +357,11 @@ class ProfileStats extends StatelessWidget {
                   child: StreamBuilder<double>(
                     stream: controller.pointsController.stream,
                     builder: (context, snapshot) {
-                      final totalPoints = snapshot.data ?? 0.0;
+                      final totalPoints = double.parse((snapshot.data ?? 0.0).toStringAsFixed(2));
                       final userLevel = _getUserLevel(totalPoints);
 
                       // Formata os valores
-                      String displayPoints = totalPoints.toStringAsFixed(0).replaceAll('.', ',');
+                      String displayPoints = totalPoints.toStringAsFixed(2).replaceAll('.', '.');
                       String displayLevel = userLevel.toString();
 
                       return Row(
@@ -444,18 +424,9 @@ class StatCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
+          Icon(icon, color: color, size: 24),
           const SizedBox(height: 8),
-          Text(
-            value,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           Text(
             title,
@@ -488,9 +459,7 @@ class ProfileSettings extends StatelessWidget {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -498,9 +467,7 @@ class ProfileSettings extends StatelessWidget {
           children: [
             Text(
               'Configurações',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SettingsItem(
@@ -510,9 +477,7 @@ class ProfileSettings extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const PrivacyPolicyPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
                 );
               },
             ),
@@ -523,9 +488,7 @@ class ProfileSettings extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const TermsConditionsPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const TermsConditionsPage()),
                 );
               },
             ),
@@ -538,10 +501,7 @@ class ProfileSettings extends StatelessWidget {
 
                 // Voltar à tela de login ou à tela inicial
                 if (context.mounted) {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    Routes.login,
-                    (route) => false,
-                  );
+                  Navigator.of(context).pushNamedAndRemoveUntil(Routes.login, (route) => false);
                 }
               },
               isDestructive: true,
@@ -557,20 +517,25 @@ class ProfileSettings extends StatelessWidget {
                   builder: (context) => AlertDialog(
                     title: const Text('Confirmar exclusão'),
                     content: const Text(
-                        'Você tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.'),
+                      'Você tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.',
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(false),
                         child: Text(
                           'Cancelar',
-                          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(true),
                         child: Text(
                           'Excluir',
-                          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
@@ -599,10 +564,7 @@ class ProfileSettings extends StatelessWidget {
 
                     // Navega para a tela de login, limpando toda a pilha
                     if (context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        Routes.login,
-                        (route) => false,
-                      );
+                      Navigator.of(context).pushNamedAndRemoveUntil(Routes.login, (route) => false);
                     }
                   } else {
                     if (context.mounted) {
@@ -678,9 +640,7 @@ class SettingsItem extends StatelessWidget {
         color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
       ),
       onTap: onTap,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
   }
 }

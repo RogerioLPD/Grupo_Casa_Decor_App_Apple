@@ -1,12 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:grupo_casadecor/routes.dart';
 import 'package:grupo_casadecor/shared/services/administrator_controller.dart';
 import 'package:grupo_casadecor/shared/services/authenticator_controller.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'dart:typed_data';
 
 class RegisterEspecificador extends StatefulWidget {
-  const RegisterEspecificador({Key? key}) : super(key: key);
+  const RegisterEspecificador({super.key});
 
   @override
   State<RegisterEspecificador> createState() => _RegisterEspecificadorState();
@@ -16,7 +19,7 @@ class _RegisterEspecificadorState extends State<RegisterEspecificador>
     with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nomeController = TextEditingController();
-  final _cpfController = TextEditingController();
+  final _cpfCnpjController = TextEditingController();
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
 
@@ -27,17 +30,26 @@ class _RegisterEspecificadorState extends State<RegisterEspecificador>
   late AnimationController _fadeController;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
+  late MaskTextInputFormatter activeFormatter;
 
   final controller = AdministradorController();
 
+  // Máscaras separadas
   final cpfFormatter = MaskTextInputFormatter(
     mask: '###.###.###-##',
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
 
+  final cnpjFormatter = MaskTextInputFormatter(
+    mask: '##.###.###/####-##',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
+
   @override
   void initState() {
+    activeFormatter = cpfFormatter;
     super.initState();
     AuthenticationController().doLogout();
 
@@ -46,26 +58,17 @@ class _RegisterEspecificadorState extends State<RegisterEspecificador>
       vsync: this,
     );
 
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
+    _fadeController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeOut));
 
     _fadeController.forward();
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -88,27 +91,38 @@ class _RegisterEspecificadorState extends State<RegisterEspecificador>
         name: _nomeController.text.trim(),
         email: _emailController.text.trim(),
         password: _senhaController.text.trim(),
-        cpf: _cpfController.text.trim(),
+        cpf: _cpfCnpjController.text.trim(), // mantém mascarado como antes
         bytes: Uint8List(0),
       );
 
       setState(() => isLoading = false);
 
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cadastro realizado com sucesso!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Cadastro realizado com sucesso!')));
         Navigator.pushNamedAndRemoveUntil(context, Routes.login, (route) => false);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Erro ao cadastrar. Verifique os dados.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Erro ao cadastrar. Verifique os dados.')));
       }
     }
   }
 
   void _toggleSenha() {
     setState(() => visivelSenha = !visivelSenha);
+  }
+
+  void _handleCpfCnpjMaskSwitch(String value) {
+    final digits = value.replaceAll(RegExp(r'\D'), '');
+    setState(() {
+      if (digits.length > 11) {
+        activeFormatter = cnpjFormatter;
+      } else {
+        activeFormatter = cpfFormatter;
+      }
+    });
   }
 
   Widget _buildForm() {
@@ -137,9 +151,7 @@ class _RegisterEspecificadorState extends State<RegisterEspecificador>
                   ),
                   Card(
                     elevation: 8,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     color: Colors.white.withValues(alpha: 0.1),
                     child: Padding(
                       padding: const EdgeInsets.all(32),
@@ -172,12 +184,36 @@ class _RegisterEspecificadorState extends State<RegisterEspecificador>
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
-                            controller: _cpfController,
-                            decoration: const InputDecoration(labelText: 'CPF'),
+                            controller: _cpfCnpjController,
+                            decoration: const InputDecoration(labelText: 'CPF/CNPJ'),
                             keyboardType: TextInputType.number,
-                            inputFormatters: [cpfFormatter],
-                            validator: (value) =>
-                                value == null || value.isEmpty ? 'Informe o CPF' : null,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly], // só números
+                            onChanged: (value) {
+                              final digits = value.replaceAll(RegExp(r'\D'), '');
+                              if (digits.length <= 11) {
+                                // aplica máscara CPF
+                                final text = cpfFormatter.maskText(digits);
+                                _cpfCnpjController.value = TextEditingValue(
+                                  text: text,
+                                  selection: TextSelection.collapsed(offset: text.length),
+                                );
+                              } else {
+                                // aplica máscara CNPJ
+                                final text = cnpjFormatter.maskText(digits);
+                                _cpfCnpjController.value = TextEditingValue(
+                                  text: text,
+                                  selection: TextSelection.collapsed(offset: text.length),
+                                );
+                              }
+                            },
+                            validator: (value) {
+                              final digits = value?.replaceAll(RegExp(r'\D'), '') ?? '';
+                              if (digits.isEmpty) return 'Informe o CPF ou CNPJ';
+                              if (digits.length != 11 && digits.length != 14) {
+                                return 'CPF deve ter 11 dígitos ou CNPJ 14 dígitos';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
@@ -186,9 +222,7 @@ class _RegisterEspecificadorState extends State<RegisterEspecificador>
                             decoration: InputDecoration(
                               labelText: 'Senha',
                               suffixIcon: IconButton(
-                                icon: Icon(
-                                  visivelSenha ? Icons.visibility : Icons.visibility_off,
-                                ),
+                                icon: Icon(visivelSenha ? Icons.visibility : Icons.visibility_off),
                                 onPressed: _toggleSenha,
                               ),
                             ),
@@ -220,10 +254,7 @@ class _RegisterEspecificadorState extends State<RegisterEspecificador>
                             },
                             child: const Text(
                               'VOLTAR',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600),
                             ),
                           ),
                         ],
@@ -251,8 +282,6 @@ class _RegisterEspecificadorState extends State<RegisterEspecificador>
               Theme.of(context).colorScheme.inversePrimary.withValues(alpha: 0.1),
               Theme.of(context).colorScheme.inversePrimary.withValues(alpha: 0.1),
             ],
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
           ),
         ),
         child: isDesktop
@@ -260,10 +289,7 @@ class _RegisterEspecificadorState extends State<RegisterEspecificador>
                 children: [
                   Expanded(
                     child: Center(
-                      child: Image.asset(
-                        "assets/images/Grupo.png",
-                        fit: BoxFit.contain,
-                      ),
+                      child: Image.asset("assets/images/Grupo.png", fit: BoxFit.contain),
                     ),
                   ),
                   Expanded(child: _buildForm()),

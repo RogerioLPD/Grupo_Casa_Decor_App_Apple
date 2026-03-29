@@ -103,11 +103,7 @@ class _QuickActionsCardState extends State<QuickActionsCard> with TickerProvider
                     final animationValue = Tween<double>(begin: 0.9, end: 1.0).animate(
                       CurvedAnimation(
                         parent: _animationController,
-                        curve: Interval(
-                          (index * 0.1).clamp(0.0, 1.0),
-                          1.0,
-                          curve: Curves.easeOut,
-                        ),
+                        curve: Interval((index * 0.1).clamp(0.0, 1.0), 1.0, curve: Curves.easeOut),
                       ),
                     );
 
@@ -161,7 +157,7 @@ class _QuickActionsCardState extends State<QuickActionsCard> with TickerProvider
                                   ),
                                 ),
                                 Text(
-                                  '${reward.pontos ?? 0} pts',
+                                  '${reward.pontos!.toStringAsFixed(2)} pts',
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),
@@ -193,10 +189,7 @@ class _QuickActionsCardState extends State<QuickActionsCard> with TickerProvider
         ),
         content: Text(reward.descricao ?? 'Sem descrição disponível.'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Fechar'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Fechar')),
         ],
       ),
     );

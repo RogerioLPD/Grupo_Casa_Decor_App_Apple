@@ -17,16 +17,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingData> _pages = [
     OnboardingData(
       image: 'assets/images/parceiros.png',
-      title: 'Compre em lojas parceiras do Grupo Casa Decor',
+      title: 'Especifique em lojas parceiras do Grupo Casa Decor',
     ),
-    OnboardingData(
-      image: 'assets/images/rewards.png',
-      title: 'Acumule Pontos',
-    ),
-    OnboardingData(
-      image: 'assets/images/awards.png',
-      title: 'Troque seus pontos por prêmios',
-    ),
+    OnboardingData(image: 'assets/images/rewards.png', title: 'Acumule Pontos'),
+    OnboardingData(image: 'assets/images/awards.png', title: 'Troque seus pontos por experiências'),
   ];
 
   void _nextPage() {
@@ -45,12 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _onGetStarted() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const AuthGate(),
-      ),
-    );
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AuthGate()));
   }
 
   @override
@@ -63,13 +52,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
               theme.colorScheme.primary,
               theme.colorScheme.primaryContainer,
               theme.colorScheme.secondary.withAlpha(204), // alpha ~0.8
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
           ),
         ),
         child: SafeArea(
@@ -151,14 +140,12 @@ class OnboardingPage extends StatelessWidget {
           Container(
             width: double.infinity,
             height: size.height * 0.5, // Reduzido de 0.6 para 0.5 para melhor ajuste
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.asset(
                 data.image,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
                     color: Theme.of(context).colorScheme.primaryContainer,
@@ -197,18 +184,14 @@ class OnboardingPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginEspecificador(),
-                        ),
+                        MaterialPageRoute(builder: (context) => const LoginEspecificador()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: size.height * 0.02),
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: Text(
                       'Login',
@@ -225,18 +208,14 @@ class OnboardingPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterEspecificador(),
-                        ),
+                        MaterialPageRoute(builder: (context) => const RegisterEspecificador()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: size.height * 0.02),
                       backgroundColor: Theme.of(context).colorScheme.secondary,
                       foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: Text(
                       'Cadastrar',
@@ -283,8 +262,5 @@ class OnboardingData {
   final String image;
   final String title;
 
-  OnboardingData({
-    required this.image,
-    required this.title,
-  });
+  OnboardingData({required this.image, required this.title});
 }

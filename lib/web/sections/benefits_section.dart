@@ -11,10 +11,7 @@ class BenefitsSection extends StatelessWidget {
     final isDesktop = size.width > 768;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? 80 : 20,
-        vertical: 100,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 80 : 20, vertical: 100),
       color: theme.colorScheme.surface,
       child: AnimatedSection(
         child: Column(
@@ -44,7 +41,7 @@ class BenefitsSection extends StatelessWidget {
             LayoutBuilder(
               builder: (context, constraints) {
                 final crossAxisCount = constraints.maxWidth > 900
-                    ? 3
+                    ? 2
                     : constraints.maxWidth > 600
                         ? 2
                         : 1;
@@ -71,7 +68,7 @@ class BenefitsSection extends StatelessWidget {
                           'Resgate produtos únicos, ferramentas profissionais e experiências.',
                       color: theme.colorScheme.secondary,
                     ),
-                    _BenefitCard(
+                    /* _BenefitCard(
                       icon: Icons.discount,
                       title: 'Descontos Especiais',
                       description:
@@ -96,7 +93,7 @@ class BenefitsSection extends StatelessWidget {
                       description:
                           'Acesso a conteúdos e ferramentas para desenvolvimento da carreira.',
                       color: theme.colorScheme.tertiary,
-                    ),
+                    ),*/
                   ],
                 );
               },
@@ -134,16 +131,15 @@ class _BenefitCardState extends State<_BenefitCard> with SingleTickerProviderSta
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-    _rotateAnimation = Tween<double>(begin: 0.0, end: 0.02).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _controller = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _rotateAnimation = Tween<double>(
+      begin: 0.0,
+      end: 0.02,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -201,10 +197,7 @@ class _BenefitCardState extends State<_BenefitCard> with SingleTickerProviderSta
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        widget.color,
-                        widget.color.withValues(alpha: 0.7),
-                      ],
+                      colors: [widget.color, widget.color.withValues(alpha: 0.7)],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
@@ -215,11 +208,7 @@ class _BenefitCardState extends State<_BenefitCard> with SingleTickerProviderSta
                       ),
                     ],
                   ),
-                  child: Icon(
-                    widget.icon,
-                    size: 40,
-                    color: Colors.white,
-                  ),
+                  child: Icon(widget.icon, size: 40, color: Colors.white),
                 ),
                 const SizedBox(height: 20),
 

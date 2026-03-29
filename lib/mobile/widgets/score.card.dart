@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:grupo_casadecor/shared/services/specifier_controller.dart';
 import 'package:grupo_casadecor/mobile/models/transaction.dart';
@@ -20,29 +21,24 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
 
   final ReleasesController _releasesController = ReleasesController();
 
-  int _todayPoints = 0;
+  double _todayPoints = 0.0; // ✅ agora é double
 
   @override
   void initState() {
     super.initState();
 
-    _pulseController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
+    _pulseController = AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    _rotationController = AnimationController(duration: const Duration(seconds: 20), vsync: this);
 
-    _rotationController = AnimationController(
-      duration: const Duration(seconds: 20),
-      vsync: this,
-    );
+    _pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut));
 
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
-    _rotationAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _rotationController, curve: Curves.linear),
-    );
+    _rotationAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _rotationController, curve: Curves.linear));
 
     _pulseController.repeat(reverse: true);
     _rotationController.repeat();
@@ -58,12 +54,11 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
       final now = DateTime.now();
 
       final todayTransactions = transactions.where(
-          (t) => t.date.year == now.year && t.date.month == now.month && t.date.day == now.day);
-
-      final totalTodayPoints = todayTransactions.fold<int>(
-        0,
-        (sum, t) => sum + t.points,
+        (t) => t.date.year == now.year && t.date.month == now.month && t.date.day == now.day,
       );
+
+      // ✅ fold agora com double
+      final totalTodayPoints = todayTransactions.fold<double>(0.0, (sum, t) => sum + t.points);
 
       if (mounted) {
         setState(() {
@@ -71,7 +66,9 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
         });
       }
     } catch (e) {
-      print("Erro ao carregar pontos do dia: $e");
+      if (kDebugMode) {
+        print("Erro ao carregar pontos do dia: $e");
+      }
       // Opcional: você pode tratar erro aqui para mostrar mensagem na UI, etc.
     }
   }
@@ -91,7 +88,10 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
       stream: widget.controller.pointsController.stream,
       builder: (context, snapshot) {
         final totalPoints = snapshot.data ?? 0.0;
-        final userLevel = _getUserLevel(totalPoints);
+        final formattedPoints = double.parse(
+          totalPoints.toStringAsFixed(2),
+        ); // ✅ Garante 2 casas decimais
+        final userLevel = _getUserLevel(formattedPoints);
 
         final todayPoints = _todayPoints;
 
@@ -109,8 +109,8 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                       theme.colorScheme.primaryContainer,
                       theme.colorScheme.secondary.withAlpha(204), // alpha ~0.8
                     ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                    //begin: Alignment.topLeft,
+                    //end: Alignment.bottomRight,
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -128,9 +128,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                 child: Card(
                   elevation: 0,
                   color: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   child: Padding(
                     padding: const EdgeInsets.all(32),
                     child: Column(
@@ -150,7 +148,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  totalPoints.toStringAsFixed(0),
+                                  totalPoints.toStringAsFixed(2),
                                   style: theme.textTheme.displayMedium?.copyWith(
                                     color: theme.colorScheme.onPrimary,
                                     fontWeight: FontWeight.bold,
@@ -199,9 +197,7 @@ class _ScoreCardState extends State<ScoreCard> with TickerProviderStateMixin {
                           decoration: BoxDecoration(
                             color: theme.colorScheme.onPrimary.withAlpha(38),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: theme.colorScheme.onPrimary.withAlpha(51),
-                            ),
+                            border: Border.all(color: theme.colorScheme.onPrimary.withAlpha(51)),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

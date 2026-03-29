@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:grupo_casadecor/mobile/screens/main_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,10 +25,7 @@ class _AuthGateState extends State<AuthGate> {
 
     if (token != null && token.isNotEmpty) {
       // Aqui você pode até validar o token com a API se quiser
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MainNavigation()),
-      );
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainNavigation()));
     } else {
       Navigator.pushReplacement(
         context,
@@ -37,8 +36,6 @@ class _AuthGateState extends State<AuthGate> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

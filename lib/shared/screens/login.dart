@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:grupo_casadecor/shared/services/authenticator_controller.dart';
 import 'package:grupo_casadecor/shared/services/login_controller.dart';
@@ -6,7 +8,7 @@ import '../../routes.dart';
 import 'package:grupo_casadecor/shared/models/login_form_layout.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();

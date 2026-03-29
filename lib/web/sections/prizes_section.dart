@@ -11,10 +11,7 @@ class PrizesSection extends StatelessWidget {
     final isDesktop = size.width > 768;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? 80 : 20,
-        vertical: 100,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 80 : 20, vertical: 100),
       color: theme.colorScheme.surface,
       child: AnimatedSection(
         child: Column(
@@ -53,38 +50,8 @@ class PrizesSection extends StatelessWidget {
 
             const SizedBox(height: 60),
 
-            // Prizes Grid
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final crossAxisCount = constraints.maxWidth > 900
-                    ? 3
-                    : constraints.maxWidth > 600
-                        ? 2
-                        : 1;
-
-                return GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    childAspectRatio: 0.8,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                  ),
-                  itemCount: _prizes.length,
-                  itemBuilder: (context, index) {
-                    final prize = _prizes[index];
-                    return _PrizeCard(
-                      title: prize['title'],
-                      description: prize['description'],
-                      points: prize['points'],
-                      imageUrl: prize['imageUrl'],
-                      category: prize['category'],
-                    );
-                  },
-                );
-              },
-            ),
+            // Expandable Grid
+            const _ExpandablePrizesGrid(),
           ],
         ),
       ),
@@ -92,54 +59,152 @@ class PrizesSection extends StatelessWidget {
   }
 }
 
+class _ExpandablePrizesGrid extends StatefulWidget {
+  const _ExpandablePrizesGrid();
+
+  @override
+  State<_ExpandablePrizesGrid> createState() => _ExpandablePrizesGridState();
+}
+
+class _ExpandablePrizesGridState extends State<_ExpandablePrizesGrid>
+    with SingleTickerProviderStateMixin {
+  bool _showAllPrizes = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final crossAxisCount = constraints.maxWidth > 900
+            ? 3
+            : constraints.maxWidth > 600
+                ? 2
+                : 1;
+
+        final prizesToShow =
+            _showAllPrizes ? _prizes : _prizes.take(crossAxisCount * 2).toList(); // 2 linhas apenas
+
+        return Column(
+          children: [
+            AnimatedSize(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: prizesToShow.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  childAspectRatio: 0.8,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                ),
+                itemBuilder: (context, index) {
+                  final prize = prizesToShow[index];
+                  return _PrizeCard(
+                    title: prize['title'],
+                    description: prize['description'],
+                    points: prize['points'],
+                    imageAsset: prize['imageAsset'],
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _showAllPrizes = !_showAllPrizes;
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: Text(_showAllPrizes ? 'Ver menos' : 'Ver tudo'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 final List<Map<String, dynamic>> _prizes = [
   {
-    'title': 'Kit Ferramentas Premium',
-    'description': 'Conjunto completo de ferramentas profissionais para arquitetos',
-    'points': '2,500 pontos',
-    'imageUrl':
-        'https://pixabay.com/get/g2a4e7957a710c650635533040acf1ba2f85456c58c600cb94579e8fac9fbb1fddc3e9af3e107f969aefa92f235167d4f50bb67f39d81161a471448deb3696dbf_1280.jpg',
-    'category': 'Ferramentas',
+    'title': 'Curso de Projetos Luminotécnicos',
+    'description': 'Essência da Luz:da ideia ao impacto',
+    'points': '200 pontos',
+    'imageAsset': 'assets/images/iluminotecnico.png',
   },
   {
-    'title': 'Curso de Design Avançado',
-    'description': 'Acesso a curso online exclusivo com certificação',
-    'points': '3,000 pontos',
-    'imageUrl':
-        'https://pixabay.com/get/g14139b1c92fe2e1f7981a93f1cd11e704ba337dc0698ff732e0006807da2564da01b8642d14663b1d3e9ac3d36e4603da195fb2855e513fd197116ba8ebc0b5b_1280.jpg',
-    'category': 'Educação',
+    'title': 'Hotel Pulso - São Paulo',
+    'description': 'Pulso Criativo:24h na Capital do Design',
+    'points': '400 pontos',
+    'imageAsset': 'assets/images/pulso.jpg',
   },
   {
-    'title': 'Viagem Arquitetônica',
-    'description': 'Tour guiado por obras arquitetônicas icônicas',
-    'points': '5,000 pontos',
-    'imageUrl':
-        'https://pixabay.com/get/gc05ed4d8aa349e4aaee29cfb768226c64a4992bdd844900edd6ecdc3ebe78163f89bb7e47bb28f5577ef3b82cff9c1c7f9b7f2af55188a74743955430168419d_1280.jpg',
-    'category': 'Experiência',
+    'title': 'Inhotim - Belo Horizonte',
+    'description': 'Arte Viva: Um Mergulho Sensorial em Inhotim',
+    'points': '500 pontos',
+    'imageAsset': 'assets/images/Inhotim.jpg',
   },
   {
-    'title': 'Software Profissional',
-    'description': 'Licença anual de software de design 3D',
-    'points': '4,000 pontos',
-    'imageUrl':
-        'https://pixabay.com/get/g61158e5900f280ef3788352c4b2018263a6ced483d04a7fbf516653510a4e48353778a78cc93730132dbc06967d754f852af712e1e940b9f2394a65c4c18e7ba_1280.jpg',
-    'category': 'Software',
+    'title': 'Hotel Fazenda Dona Carolina',
+    'description': 'Campo & Conforto:Tradição com Elegância',
+    'points': '600 pontos',
+    'imageAsset': 'assets/images/donacarolina.jpg',
   },
   {
-    'title': 'Mesa Digitalizadora',
-    'description': 'Equipamento premium para desenho digital',
-    'points': '3,500 pontos',
-    'imageUrl':
-        'https://pixabay.com/get/gc913c792a55891bcc01410cb3d54689690362eeea3f50dbe184c7a954c591ce04cb769ad1ef9d9cf2e9a966f474661be9fd68e081e036de9976adf139e1a9e2a_1280.jpg',
-    'category': 'Equipamento',
+    'title': 'Brasília - Arquitetura e Design',
+    'description': 'Brasília em Traço Contínuo: O Desenho de um Sonho Moderno',
+    'points': '600 pontos',
+    'imageAsset': 'assets/images/brasilia.jpg',
   },
   {
-    'title': 'Consultoria Personalizada',
-    'description': 'Sessões com especialistas em design',
+    'title': 'Rio de Janeiro',
+    'description': 'Entre Morros e Mar:Inspiração Carioca',
+    'points': '600 pontos',
+    'imageAsset': 'assets/images/rio.jpg',
+  },
+  {
+    'title': 'Ritz Barra de São Miguel',
+    'description': 'Arquitetura Tropical: Um Roteiro à Luz do Sol',
     'points': '2,000 pontos',
-    'imageUrl':
-        'https://pixabay.com/get/g3143dfddad35568a59c6b2d788b42bdcb4d32a4feea4af927db6487bd1763f65c7b1fdc58a443e527951947d8a3eec809e08ce18829403999e15c461bf6aa2a2_1280.jpg',
-    'category': 'Serviço',
+    'imageAsset': 'assets/images/barrasm.jpg',
+  },
+  {
+    'title': 'Santiago',
+    'description': 'Entre Andes & Aquarelas:Essência Sul-Americana',
+    'points': '800 pontos',
+    'imageAsset': 'assets/images/santiago.jpg',
+  },
+  {
+    'title': 'Mendoza',
+    'description': 'Design & Degustação:Vinhos com História',
+    'points': '1,000 pontos',
+    'imageAsset': 'assets/images/mendoza.jpg',
+  },
+  {
+    'title': 'Roma',
+    'description': 'Clássico Eterno: Traços da Arquitetura Universal',
+    'points': '1,900 pontos',
+    'imageAsset': 'assets/images/roma.jpg',
+  },
+  {
+    'title': 'Istambul',
+    'description': 'Cúpulas & Contrastes:Inspiração entre Oriente e Ocidente',
+    'points': '2,000 pontos',
+    'imageAsset': 'assets/images/istambul.jpg',
+  },
+  {
+    'title': 'Berlim',
+    'description': 'Arquitetura da Liberdade:Um Encontro com o Design Moderno',
+    'points': '2,200 pontos',
+    'imageAsset': 'assets/images/berlim.jpg',
   },
 ];
 
@@ -155,13 +220,11 @@ class _FeaturedPrizeState extends State<_FeaturedPrize> with SingleTickerProvide
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _controller = AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    _pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     _controller.repeat(reverse: true);
   }
 
@@ -187,10 +250,7 @@ class _FeaturedPrizeState extends State<_FeaturedPrize> with SingleTickerProvide
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  theme.colorScheme.primary,
-                  theme.colorScheme.secondary,
-                ],
+                colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
               ),
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
@@ -226,7 +286,7 @@ class _FeaturedPrizeState extends State<_FeaturedPrize> with SingleTickerProvide
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'MacBook Pro 16" M3 Max',
+                        'Carmel Charme Aquiraz - Ceará',
                         style: theme.textTheme.headlineMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -234,7 +294,7 @@ class _FeaturedPrizeState extends State<_FeaturedPrize> with SingleTickerProvide
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'O poder da criação sem limites. Ideal para renderização, modelagem 3D e design arquitetônico profissional.',
+                        'Essência do Refúgio:Charme e Design à Beira-Mar',
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: Colors.white.withValues(alpha: 0.9),
                           height: 1.5,
@@ -252,14 +312,10 @@ class _FeaturedPrizeState extends State<_FeaturedPrize> with SingleTickerProvide
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.stars,
-                                  size: 20,
-                                  color: theme.colorScheme.primary,
-                                ),
+                                Icon(Icons.stars, size: 20, color: theme.colorScheme.primary),
                                 const SizedBox(width: 8),
                                 Text(
-                                  '10,000 pontos',
+                                  '1,100 pontos',
                                   style: theme.textTheme.labelLarge?.copyWith(
                                     color: theme.colorScheme.primary,
                                     fontWeight: FontWeight.bold,
@@ -305,16 +361,12 @@ class _FeaturedPrizeState extends State<_FeaturedPrize> with SingleTickerProvide
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
-                          'https://pixabay.com/get/g61158e5900f280ef3788352c4b2018263a6ced483d04a7fbf516653510a4e48353778a78cc93730132dbc06967d754f852af712e1e940b9f2394a65c4c18e7ba_1280.jpg',
+                        child: Image.asset(
+                          'assets/images/charme.jpg',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) => Container(
                             color: Colors.white.withValues(alpha: 0.1),
-                            child: const Icon(
-                              Icons.laptop_mac,
-                              size: 80,
-                              color: Colors.white,
-                            ),
+                            child: const Icon(Icons.laptop_mac, size: 80, color: Colors.white),
                           ),
                         ),
                       ),
@@ -334,15 +386,13 @@ class _PrizeCard extends StatefulWidget {
   final String title;
   final String description;
   final String points;
-  final String imageUrl;
-  final String category;
+  final String imageAsset;
 
   const _PrizeCard({
     required this.title,
     required this.description,
     required this.points,
-    required this.imageUrl,
-    required this.category,
+    required this.imageAsset,
   });
 
   @override
@@ -357,13 +407,11 @@ class _PrizeCardState extends State<_PrizeCard> with SingleTickerProviderStateMi
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _controller = AnimationController(duration: const Duration(milliseconds: 200), vsync: this);
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.03,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -420,8 +468,8 @@ class _PrizeCardState extends State<_PrizeCard> with SingleTickerProviderStateMi
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
                     ),
-                    child: Image.network(
-                      widget.imageUrl,
+                    child: Image.asset(
+                      widget.imageAsset,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
                         color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
@@ -445,20 +493,6 @@ class _PrizeCardState extends State<_PrizeCard> with SingleTickerProviderStateMi
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Category
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.secondary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          widget.category,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.secondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
                       const SizedBox(height: 8),
 
                       // Title

@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:animations/animations.dart';
 import 'package:flutter/widgets.dart';
 
@@ -8,7 +10,10 @@ class Routes {
   static const String login = "login";
   static const String registerEspecificador = "register";
   static const String terms = "terms";
-  static const String privacy = "privacy";
+  static const String privacy = "privacidade";
+  static const String homeAdm = "homeadm";
+  static const String homeCompany = "homecompany";
+  static const String rank = "rank";
 
   static Route<T> fadeThrough<T>(RouteSettings settings, WidgetBuilder page, {int duration = 300}) {
     return PageRouteBuilder<T>(

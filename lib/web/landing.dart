@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -24,13 +26,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeIn),
-    );
+    _fadeController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
     _fadeController.forward();
   }
 
@@ -55,7 +55,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isMobile = MediaQuery.of(context).size.width < 768;
 
     return Scaffold(
       body: CustomScrollView(
@@ -106,11 +105,7 @@ class AppBarContent extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.architecture,
-                size: 32,
-                color: theme.colorScheme.primary,
-              ),
+              Icon(Icons.architecture, size: 32, color: theme.colorScheme.primary),
               const SizedBox(width: 12),
               Text(
                 'Grupo Casa Decor',
@@ -124,10 +119,7 @@ class AppBarContent extends StatelessWidget {
           if (!isMobile) const NavigationMenu(),
           if (isMobile)
             IconButton(
-              icon: Icon(
-                Icons.menu,
-                color: theme.colorScheme.primary,
-              ),
+              icon: Icon(Icons.menu, color: theme.colorScheme.primary),
               onPressed: () => _showMobileMenu(context),
             ),
         ],
@@ -136,10 +128,7 @@ class AppBarContent extends StatelessWidget {
   }
 
   void _showMobileMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => const MobileNavigationMenu(),
-    );
+    showModalBottomSheet(context: context, builder: (context) => const MobileNavigationMenu());
   }
 }
 
@@ -163,18 +152,18 @@ class NavigationMenu extends StatelessWidget {
   }
 
   Widget _NavButton(String text, VoidCallback onPressed) {
-    return Builder(builder: (context) {
-      final theme = Theme.of(context);
-      return TextButton(
-        onPressed: onPressed,
-        child: Text(
-          text,
-          style: theme.textTheme.labelLarge?.copyWith(
-            color: theme.colorScheme.primary,
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        return TextButton(
+          onPressed: onPressed,
+          child: Text(
+            text,
+            style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }
 
@@ -220,16 +209,12 @@ class MobileNavigationMenu extends StatelessWidget {
   }
 
   Widget _MobileNavItem(String text, VoidCallback onPressed) {
-    return Builder(builder: (context) {
-      final theme = Theme.of(context);
-      return ListTile(
-        title: Text(
-          text,
-          style: theme.textTheme.titleMedium,
-        ),
-        onTap: onPressed,
-      );
-    });
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        return ListTile(title: Text(text, style: theme.textTheme.titleMedium), onTap: onPressed);
+      },
+    );
   }
 }
 
@@ -250,19 +235,13 @@ class HeroSection extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primaryContainer,
-            theme.colorScheme.surface,
-          ],
+          colors: [theme.colorScheme.primaryContainer, theme.colorScheme.surface],
         ),
       ),
       child: FadeTransition(
         opacity: fadeAnimation,
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: isMobile ? 24 : 80,
-            vertical: 60,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 80, vertical: 60),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,49 +285,26 @@ class HeroSection extends StatelessWidget {
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {},
-                    icon: Icon(
-                      Icons.person_add,
-                      color: theme.colorScheme.onPrimary,
-                    ),
+                    icon: Icon(Icons.person_add, color: theme.colorScheme.onPrimary),
                     label: Text(
                       'Cadastrar-se',
-                      style: TextStyle(
-                        color: theme.colorScheme.onPrimary,
-                      ),
+                      style: TextStyle(color: theme.colorScheme.onPrimary),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     ),
                   ),
                   const SizedBox(width: 16),
                   OutlinedButton.icon(
                     onPressed: () {},
-                    icon: Icon(
-                      Icons.play_arrow,
-                      color: theme.colorScheme.primary,
-                    ),
-                    label: Text(
-                      'Saiba Mais',
-                      style: TextStyle(
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
+                    icon: Icon(Icons.play_arrow, color: theme.colorScheme.primary),
+                    label: Text('Saiba Mais', style: TextStyle(color: theme.colorScheme.primary)),
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: theme.colorScheme.primary),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     ),
                   ),
                 ],
@@ -371,17 +327,13 @@ class AboutSection extends StatelessWidget {
 
     return AnimationLimiter(
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: isMobile ? 24 : 80,
-          vertical: 80,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 80, vertical: 80),
         child: Column(
           children: AnimationConfiguration.toStaggeredList(
             duration: const Duration(milliseconds: 375),
-            childAnimationBuilder: (widget) => SlideAnimation(
-              horizontalOffset: 50.0,
-              child: FadeInAnimation(child: widget),
-            ),
+            childAnimationBuilder:
+                (widget) =>
+                    SlideAnimation(horizontalOffset: 50.0, child: FadeInAnimation(child: widget)),
             children: [
               Text(
                 'Sobre o Programa',
@@ -402,13 +354,9 @@ class AboutSection extends StatelessWidget {
               ),
               const SizedBox(height: 48),
               if (isMobile)
-                Column(
-                  children: _buildFeatureCards(context),
-                )
+                Column(children: _buildFeatureCards(context))
               else
-                Row(
-                  children: _buildFeatureCards(context),
-                ),
+                Row(children: _buildFeatureCards(context)),
             ],
           ),
         ),
@@ -467,9 +415,7 @@ class FeatureCard extends StatelessWidget {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -480,18 +426,12 @@ class FeatureCard extends StatelessWidget {
                 color: theme.colorScheme.primaryContainer,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 32,
-                color: theme.colorScheme.primary,
-              ),
+              child: Icon(icon, size: 32, color: theme.colorScheme.primary),
             ),
             const SizedBox(height: 16),
             Text(
               title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -520,18 +460,14 @@ class BenefitsSection extends StatelessWidget {
 
     return Container(
       color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 24 : 80,
-        vertical: 80,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 80, vertical: 80),
       child: AnimationLimiter(
         child: Column(
           children: AnimationConfiguration.toStaggeredList(
             duration: const Duration(milliseconds: 375),
-            childAnimationBuilder: (widget) => SlideAnimation(
-              verticalOffset: 50.0,
-              child: FadeInAnimation(child: widget),
-            ),
+            childAnimationBuilder:
+                (widget) =>
+                    SlideAnimation(verticalOffset: 50.0, child: FadeInAnimation(child: widget)),
             children: [
               Text(
                 'Benefícios Exclusivos',
@@ -611,11 +547,7 @@ class BenefitItem extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 32,
-            color: theme.colorScheme.secondary,
-          ),
+          Icon(icon, size: 32, color: theme.colorScheme.secondary),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -624,9 +556,7 @@ class BenefitItem extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -653,18 +583,14 @@ class PartnersSection extends StatelessWidget {
     final isMobile = MediaQuery.of(context).size.width < 768;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 24 : 80,
-        vertical: 80,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 80, vertical: 80),
       child: AnimationLimiter(
         child: Column(
           children: AnimationConfiguration.toStaggeredList(
             duration: const Duration(milliseconds: 375),
-            childAnimationBuilder: (widget) => SlideAnimation(
-              horizontalOffset: -50.0,
-              child: FadeInAnimation(child: widget),
-            ),
+            childAnimationBuilder:
+                (widget) =>
+                    SlideAnimation(horizontalOffset: -50.0, child: FadeInAnimation(child: widget)),
             children: [
               Text(
                 'Lojas Parceiras',
@@ -742,9 +668,7 @@ class PartnerCard extends StatelessWidget {
 
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -756,14 +680,11 @@ class PartnerCard extends StatelessWidget {
                 imageUrl,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: theme.colorScheme.primaryContainer,
-                  child: Icon(
-                    Icons.store,
-                    size: 48,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
+                errorBuilder:
+                    (context, error, stackTrace) => Container(
+                      color: theme.colorScheme.primaryContainer,
+                      child: Icon(Icons.store, size: 48, color: theme.colorScheme.primary),
+                    ),
               ),
             ),
           ),
@@ -777,9 +698,7 @@ class PartnerCard extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -812,18 +731,14 @@ class RewardsSection extends StatelessWidget {
 
     return Container(
       color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.3),
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 24 : 80,
-        vertical: 80,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 80, vertical: 80),
       child: AnimationLimiter(
         child: Column(
           children: AnimationConfiguration.toStaggeredList(
             duration: const Duration(milliseconds: 375),
-            childAnimationBuilder: (widget) => SlideAnimation(
-              verticalOffset: 50.0,
-              child: FadeInAnimation(child: widget),
-            ),
+            childAnimationBuilder:
+                (widget) =>
+                    SlideAnimation(verticalOffset: 50.0, child: FadeInAnimation(child: widget)),
             children: [
               Text(
                 'Catálogo de Prêmios',
@@ -898,9 +813,7 @@ class RewardCard extends StatelessWidget {
 
     return Card(
       elevation: 6,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -912,18 +825,12 @@ class RewardCard extends StatelessWidget {
                 color: theme.colorScheme.secondary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 40,
-                color: theme.colorScheme.secondary,
-              ),
+              child: Icon(icon, size: 40, color: theme.colorScheme.secondary),
             ),
             const SizedBox(height: 16),
             Text(
               title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -967,18 +874,14 @@ class ContactSection extends StatelessWidget {
 
     return Container(
       color: theme.colorScheme.primary,
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 24 : 80,
-        vertical: 80,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 80, vertical: 80),
       child: AnimationLimiter(
         child: Column(
           children: AnimationConfiguration.toStaggeredList(
             duration: const Duration(milliseconds: 375),
-            childAnimationBuilder: (widget) => SlideAnimation(
-              verticalOffset: 30.0,
-              child: FadeInAnimation(child: widget),
-            ),
+            childAnimationBuilder:
+                (widget) =>
+                    SlideAnimation(verticalOffset: 30.0, child: FadeInAnimation(child: widget)),
             children: [
               Text(
                 'Entre em Contato',
@@ -998,9 +901,7 @@ class ContactSection extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               if (isMobile)
-                Column(
-                  children: _buildContactInfo(theme),
-                )
+                Column(children: _buildContactInfo(theme))
               else
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1009,25 +910,12 @@ class ContactSection extends StatelessWidget {
               const SizedBox(height: 40),
               ElevatedButton.icon(
                 onPressed: () {},
-                icon: Icon(
-                  Icons.email,
-                  color: theme.colorScheme.primary,
-                ),
-                label: Text(
-                  'Fale Conosco',
-                  style: TextStyle(
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
+                icon: Icon(Icons.email, color: theme.colorScheme.primary),
+                label: Text('Fale Conosco', style: TextStyle(color: theme.colorScheme.primary)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
               ),
             ],
@@ -1039,24 +927,14 @@ class ContactSection extends StatelessWidget {
 
   List<Widget> _buildContactInfo(ThemeData theme) {
     return [
-      ContactInfo(
-        icon: Icons.phone,
-        title: 'Telefone',
-        info: '(11) 9999-9999',
-        theme: theme,
-      ),
+      ContactInfo(icon: Icons.phone, title: 'Telefone', info: '(11) 9999-9999', theme: theme),
       ContactInfo(
         icon: Icons.email,
         title: 'E-mail',
         info: 'contato@grupocasadecor.com.br',
         theme: theme,
       ),
-      ContactInfo(
-        icon: Icons.location_on,
-        title: 'Endereço',
-        info: 'São Paulo, SP',
-        theme: theme,
-      ),
+      ContactInfo(icon: Icons.location_on, title: 'Endereço', info: 'São Paulo, SP', theme: theme),
     ];
   }
 }
@@ -1081,11 +959,7 @@ class ContactInfo extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         children: [
-          Icon(
-            icon,
-            size: 32,
-            color: theme.colorScheme.onPrimary,
-          ),
+          Icon(icon, size: 32, color: theme.colorScheme.onPrimary),
           const SizedBox(height: 8),
           Text(
             title,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:grupo_casadecor/mobile/models/reward.dart';
@@ -23,9 +24,13 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
   @override
   void initState() {
     super.initState();
-    print('[RewardsScreen] initState executado');
+    if (kDebugMode) {
+      print('[RewardsScreen] initState executado');
+    }
+
+    // Garante que o controller carregue/mande os pontos no início da tela
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.controller.initValues(); // Deve disparar o print acima
+      widget.controller.initValues();
     });
 
     _animationController = AnimationController(
@@ -61,9 +66,11 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
       setState(() {
         _filteredRewards = _controller.awardsList
             .cast<RewardModel>()
-            .where((reward) =>
-                (reward.titulo ?? '').toLowerCase().contains(query.toLowerCase()) ||
-                (reward.descricao ?? '').toLowerCase().contains(query.toLowerCase()))
+            .where(
+              (reward) =>
+                  (reward.titulo ?? '').toLowerCase().contains(query.toLowerCase()) ||
+                  (reward.descricao ?? '').toLowerCase().contains(query.toLowerCase()),
+            )
             .toList();
       });
     }
@@ -73,15 +80,12 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    const userPoints = 1000; // exemplo fixo, substitua pela pontuação real
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Prêmios Disponíveis',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -99,12 +103,17 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
 
         return Column(
           children: [
+            // ======= SALDO DE PONTOS (atualiza no início com initialData) =======
             StreamBuilder<double>(
               stream: widget.controller.pointsController.stream,
+              initialData: 0.0, // evita ficar sem valor até o primeiro evento
               builder: (context, snapshot) {
-                print("Snapshot data: ${snapshot.data} - HasData: ${snapshot.hasData}");
-                final totalPoints = snapshot.data ?? 0.0;
+                if (kDebugMode) {
+                  print("Snapshot data: ${snapshot.data} - HasData: ${snapshot.hasData}");
+                }
 
+                // ✅ garante que totalPoints seja double e arredondado para 2 casas decimais
+                final totalPoints = double.parse((snapshot.data ?? 0.0).toStringAsFixed(2));
                 return Container(
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(16),
@@ -114,8 +123,6 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                         theme.colorScheme.secondary,
                         theme.colorScheme.secondary.withAlpha(204),
                       ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -128,7 +135,7 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Seus pontos: ${totalPoints.toStringAsFixed(0)} pts',
+                        'Seus pontos: ${totalPoints.toStringAsFixed(2)} pts',
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: theme.colorScheme.onSecondary,
                           fontWeight: FontWeight.w600,
@@ -139,6 +146,8 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                 );
               },
             ),
+
+            // ======= BUSCA =======
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextField(
@@ -152,47 +161,49 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemCount: _filteredRewards.length,
-                itemBuilder: (context, index) {
-                  final reward = _filteredRewards[index];
-                  return AnimatedBuilder(
-                    animation: _animationController,
-                    builder: (context, child) {
-                      final animationValue = Tween<double>(
-                        begin: 0.0,
-                        end: 1.0,
-                      ).animate(CurvedAnimation(
-                        parent: _animationController,
-                        curve: Interval(
-                          index * 0.1,
-                          1.0,
-                          curve: Curves.easeOut,
-                        ),
-                      ));
 
-                      return Transform.scale(
-                        scale: animationValue.value,
-                        child: RewardCard(
-                          reward: reward,
-                          canRedeem: userPoints >= (reward.pontos ?? 0),
-                        ),
+            // ======= LISTA DE PRÊMIOS (reconstrói quando os pontos mudam) =======
+            Expanded(
+              child: StreamBuilder<double>(
+                stream: widget.controller.pointsController.stream,
+                initialData: 0.0,
+                builder: (context, snapshot) {
+                  final userPoints = snapshot.data ?? 0.0;
+
+                  return GridView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.8,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
+                    itemCount: _filteredRewards.length,
+                    itemBuilder: (context, index) {
+                      final reward = _filteredRewards[index];
+                      return AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (context, child) {
+                          final animationValue = Tween<double>(begin: 0.0, end: 1.0).animate(
+                            CurvedAnimation(
+                              parent: _animationController,
+                              curve: Interval(index * 0.1, 1.0, curve: Curves.easeOut),
+                            ),
+                          );
+
+                          return Transform.scale(
+                            scale: animationValue.value,
+                            child: RewardCard(
+                              reward: reward,
+                              canRedeem: userPoints >= (reward.pontos ?? 0),
+                            ),
+                          );
+                        },
                       );
                     },
                   );
@@ -208,33 +219,22 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
 
 class RewardCard extends StatelessWidget {
   final RewardModel reward;
-  final bool canRedeem;
+  final bool canRedeem; // Agora será ignorado, mas mantemos para compatibilidade
 
-  const RewardCard({
-    super.key,
-    required this.reward,
-    required this.canRedeem,
-  });
+  const RewardCard({super.key, required this.reward, required this.canRedeem});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: canRedeem ? 4 : 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      elevation: 4, // Sempre com elevação padrão de ativo
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: canRedeem
-            ? () {
-                showDialog(
-                  context: context,
-                  builder: (context) => RewardDialog(reward: reward),
-                );
-              }
-            : null,
+        onTap: () {
+          showDialog(context: context, builder: (context) => RewardDialog(reward: reward));
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -249,9 +249,7 @@ class RewardCard extends StatelessWidget {
                     ),
                     child: Container(
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                      ),
+                      decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest),
                       child: Image.network(
                         reward.imagem1 ?? '',
                         fit: BoxFit.cover,
@@ -268,43 +266,19 @@ class RewardCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (!canRedeem)
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16),
-                          ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.lock,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-                      ),
-                    ),
                   Positioned(
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: canRedeem ? theme.colorScheme.secondary : theme.colorScheme.outline,
+                        color: theme.colorScheme.secondary,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         '${reward.pontos ?? 0} pts',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: canRedeem
-                              ? theme.colorScheme.onSecondary
-                              : theme.colorScheme.onSurface,
+                          color: theme.colorScheme.onSecondary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -324,9 +298,7 @@ class RewardCard extends StatelessWidget {
                       reward.titulo ?? '',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: canRedeem
-                            ? theme.colorScheme.onSurface
-                            : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: theme.colorScheme.onSurface,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -336,9 +308,7 @@ class RewardCard extends StatelessWidget {
                       child: Text(
                         reward.descricao ?? '',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: canRedeem
-                              ? theme.colorScheme.onSurface.withValues(alpha: 0.7)
-                              : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface.withOpacity(0.7),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -365,14 +335,10 @@ class RewardDialog extends StatelessWidget {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(
         'Resgatar Prêmio',
-        style: theme.textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-        ),
+        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -380,15 +346,10 @@ class RewardDialog extends StatelessWidget {
         children: [
           Text(
             reward.titulo ?? '',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
-          Text(
-            reward.descricao ?? '',
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text(reward.descricao ?? '', style: theme.textTheme.bodyMedium),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(12),
@@ -398,11 +359,7 @@ class RewardDialog extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.info_outline,
-                  color: theme.colorScheme.onSecondaryContainer,
-                  size: 20,
-                ),
+                Icon(Icons.info_outline, color: theme.colorScheme.onSecondaryContainer, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -418,13 +375,10 @@ class RewardDialog extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar'),
-        ),
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
         ElevatedButton(
           onPressed: () {
-            Navigator.pop(context); // fecha o dialogo atual
+            Navigator.pop(context); // fecha o diálogo atual
 
             // Exibe mensagem de contato com o administrador
             showDialog(
@@ -435,10 +389,7 @@ class RewardDialog extends StatelessWidget {
                   'Entre em contato com um administrador do Grupo Casa Decor para concluir o resgate.',
                 ),
                 actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('OK'),
-                  ),
+                  TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
                 ],
               ),
             );

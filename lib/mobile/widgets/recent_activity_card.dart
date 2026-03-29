@@ -6,11 +6,7 @@ class RecentActivityCard extends StatefulWidget {
   final PointTransaction transaction;
   final int index; // Novo parâmetro
 
-  const RecentActivityCard({
-    super.key,
-    required this.transaction,
-    required this.index,
-  });
+  const RecentActivityCard({super.key, required this.transaction, required this.index});
 
   @override
   State<RecentActivityCard> createState() => _RecentActivityCardState();
@@ -31,10 +27,7 @@ class _RecentActivityCardState extends State<RecentActivityCard> with TickerProv
     _slideAnimation = Tween<Offset>(
       begin: const Offset(-0.1, 0),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOut));
 
     _slideController.forward();
   }
@@ -62,9 +55,7 @@ class _RecentActivityCardState extends State<RecentActivityCard> with TickerProv
         margin: const EdgeInsets.only(bottom: 12),
         child: Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: () => _showTransactionDetails(context),
@@ -92,9 +83,7 @@ class _RecentActivityCardState extends State<RecentActivityCard> with TickerProv
                         Text.rich(
                           TextSpan(
                             text: 'Compra em ',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                             children: [
                               TextSpan(
                                 text: widget.transaction.companyName,
@@ -153,7 +142,7 @@ class _RecentActivityCardState extends State<RecentActivityCard> with TickerProv
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      '${isEarned ? '+' : ''}${widget.transaction.valor} pts',
+                      '${isEarned ? '+' : ''}${widget.transaction.valor.toStringAsFixed(2)} pts',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: iconColor,
@@ -228,7 +217,7 @@ class _RecentActivityCardState extends State<RecentActivityCard> with TickerProv
                           ),
                         ),
                         Text(
-                          '${isEarned ? '+' : ''}${widget.transaction.points} pontos',
+                          '${isEarned ? '+' : ''}${widget.transaction.points.toStringAsFixed(2)} pontos',
                           style: theme.textTheme.headlineSmall?.copyWith(
                             color: iconColor,
                             fontWeight: FontWeight.bold,
@@ -258,11 +247,7 @@ class _RecentActivityCardState extends State<RecentActivityCard> with TickerProv
                 value: DateFormat('dd/MM/yyyy - HH:mm').format(widget.transaction.date),
               ),
               const SizedBox(height: 16),
-              _DetailRow(
-                icon: Icons.tag,
-                label: 'ID da Transação',
-                value: widget.transaction.id,
-              ),
+              _DetailRow(icon: Icons.tag, label: 'ID da Transação', value: widget.transaction.id),
               const SizedBox(height: 24),
             ],
           ),
@@ -277,11 +262,7 @@ class _DetailRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _DetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+  const _DetailRow({required this.icon, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -290,11 +271,7 @@ class _DetailRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: theme.colorScheme.primary,
-        ),
+        Icon(icon, size: 20, color: theme.colorScheme.primary),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -308,12 +285,7 @@ class _DetailRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                value,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              Text(value, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
             ],
           ),
         ),

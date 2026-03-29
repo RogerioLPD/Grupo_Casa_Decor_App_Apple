@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none'
 
-version: 1.0.2+3
+version: 1.0.5+5
 
 
 environment:
@@ -25,6 +25,12 @@ dependencies:
   mask_text_input_formatter: ^2.9.0
   animated_text_kit: ^4.2.3
   flutter_staggered_animations: ^1.1.1
+  url_launcher: ^6.3.2
+  file_picker: ^10.3.10
+  flutter_riverpod: ^3.3.1
+  cpf_cnpj_validator: ^2.0.0
+  pdf: ^3.12.0
+  printing: ^5.14.3
 
 dev_dependencies:
   flutter_test:

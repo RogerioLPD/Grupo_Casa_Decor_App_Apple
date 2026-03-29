@@ -16,7 +16,6 @@ class NavigationMenu extends StatefulWidget {
 
 class _NavigationMenuState extends State<NavigationMenu> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _slideAnimation;
   bool _isScrolled = false;
   bool _isMobileMenuOpen = false;
 
@@ -24,7 +23,6 @@ class _NavigationMenuState extends State<NavigationMenu> with SingleTickerProvid
     'Início',
     'Sobre',
     'Como Funciona',
-    'Benefícios',
     'Parceiros',
     'Prêmios',
     'Contato',
@@ -36,9 +34,6 @@ class _NavigationMenuState extends State<NavigationMenu> with SingleTickerProvid
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
-    );
-    _slideAnimation = Tween<double>(begin: -1.0, end: 0.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
     widget.scrollController.addListener(_onScroll);
@@ -74,7 +69,7 @@ class _NavigationMenuState extends State<NavigationMenu> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDesktop = MediaQuery.of(context).size.width > 768;
+    final isDesktop = MediaQuery.of(context).size.width > 1050;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),

@@ -8,13 +8,10 @@ class PartnersSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 768;
+    final isDesktop = size.width > 958;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? 80 : 20,
-        vertical: 100,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 80 : 20, vertical: 100),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topRight,
@@ -62,9 +59,9 @@ class PartnersSection extends StatelessWidget {
               builder: (context, constraints) {
                 final crossAxisCount = constraints.maxWidth > 1000
                     ? 4
-                    : constraints.maxWidth > 700
+                    : constraints.maxWidth > 800
                         ? 3
-                        : constraints.maxWidth > 500
+                        : constraints.maxWidth > 700
                             ? 2
                             : 1;
 
@@ -84,7 +81,7 @@ class PartnersSection extends StatelessWidget {
                       name: partner['name'],
                       category: partner['category'],
                       points: partner['points'],
-                      icon: partner['icon'],
+                      logo: partner['logo'],
                       color: partner['color'],
                     );
                   },
@@ -101,9 +98,7 @@ class PartnersSection extends StatelessWidget {
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 elevation: 8,
               ),
               child: Row(
@@ -113,9 +108,7 @@ class PartnersSection extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     'Ver Todas as Lojas',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -129,60 +122,172 @@ class PartnersSection extends StatelessWidget {
 
 final List<Map<String, dynamic>> _partnerStores = [
   {
-    'name': 'Casa & Design',
-    'category': 'Móveis Premium',
-    'points': '2x pontos',
-    'icon': Icons.chair,
+    'name': 'Art Wood',
+    'category': 'Móveis',
+    'points': '+ pontos',
+    'logo': 'assets/images/artwood.JPG',
     'color': const Color(0xFF2C5F41),
   },
   {
-    'name': 'Materiais Nobres',
-    'category': 'Revestimentos',
-    'points': '3x pontos',
-    'icon': Icons.texture,
-    'color': const Color(0xFFB8860B),
-  },
-  {
-    'name': 'Iluminação Elite',
-    'category': 'Iluminação',
-    'points': '2x pontos',
-    'icon': Icons.lightbulb,
-    'color': const Color(0xFF6B4423),
-  },
-  {
-    'name': 'Ferramentas Pro',
-    'category': 'Equipamentos',
-    'points': '1.5x pontos',
-    'icon': Icons.construction,
-    'color': const Color(0xFF2C5F41),
-  },
-  {
-    'name': 'Tintas & Cores',
+    'name': 'ABC da Contrução',
     'category': 'Acabamentos',
-    'points': '2x pontos',
-    'icon': Icons.palette,
+    'points': '+ pontos',
+    'logo': 'assets/images/abc.JPG',
     'color': const Color(0xFFB8860B),
   },
   {
-    'name': 'Jardim & Paisagem',
-    'category': 'Paisagismo',
-    'points': '2.5x pontos',
-    'icon': Icons.park,
+    'name': 'BS Ar-Condicionado',
+    'category': 'Climatização',
+    'points': '+ pontos',
+    'logo': 'assets/images/bs.JPG',
     'color': const Color(0xFF6B4423),
   },
   {
-    'name': 'Tech House',
-    'category': 'Automação',
-    'points': '3x pontos',
-    'icon': Icons.home,
+    'name': 'Caetano Aluminox',
+    'category': 'Acabamentos',
+    'points': '+ pontos',
+    'logo': 'assets/images/caetano.JPG',
     'color': const Color(0xFF2C5F41),
   },
   {
-    'name': 'Metais & Acessórios',
-    'category': 'Acessórios',
-    'points': '1.5x pontos',
-    'icon': Icons.hardware,
+    'name': 'Artesano',
+    'category': 'Revestimentos',
+    'points': '+ pontos',
+    'logo': 'assets/images/artesano.JPG',
     'color': const Color(0xFFB8860B),
+  },
+  {
+    'name': 'Leds & Leds',
+    'category': 'Iluminação',
+    'points': '+ pontos',
+    'logo': 'assets/images/leds.JPG',
+    'color': const Color(0xFF6B4423),
+  },
+  {
+    'name': 'Gaaga',
+    'category': 'Paisagismo',
+    'points': '+ pontos',
+    'logo': 'assets/images/gaaga.jpg',
+    'color': const Color(0xFF2C5F41),
+  },
+  {
+    'name': 'MPAR',
+    'category': 'Climatização',
+    'points': '+ pontos',
+    'logo': 'assets/images/mpar.JPG',
+    'color': const Color(0xFF6B4423),
+  },
+  {
+    'name': 'Sealy',
+    'category': 'Colchões',
+    'points': '+ pontos',
+    'logo': 'assets/images/sealy.JPG',
+    'color': const Color(0xFFB8860B),
+  },
+  {
+    'name': 'Elevadores para Casa',
+    'category': 'Mobilidade',
+    'points': '+ pontos',
+    'logo': 'assets/images/elevadores.JPG',
+    'color': const Color(0xFF6B4423),
+  },
+  {
+    'name': 'Auto Home',
+    'category': 'Automação',
+    'points': '+ pontos',
+    'logo': 'assets/images/autohome.JPG',
+    'color': const Color(0xFF2C5F41),
+  },
+  {
+    'name': 'Steel Pro',
+    'category': 'Engenharia',
+    'points': '+ pontos',
+    'logo': 'assets/images/steelpro.jpg',
+    'color': const Color(0xFFB8860B),
+  },
+  {
+    'name': 'Ecosol',
+    'category': 'Aquecedores',
+    'points': '+ pontos',
+    'logo': 'assets/images/ecosol.jpg',
+    'color': const Color(0xFF6B4423),
+  },
+  {
+    'name': 'Fercimcal',
+    'category': 'Ferragens',
+    'points': '+ pontos',
+    'logo': 'assets/images/ferci.jpg',
+    'color': const Color(0xFFB8860B),
+  },
+  {
+    'name': 'Dexter',
+    'category': 'Locações',
+    'points': '+ pontos',
+    'logo': 'assets/images/Dexter.jpg',
+    'color': const Color(0xFF2C5F41),
+  },
+  {
+    'name': 'JMS',
+    'category': 'Artefatos de Cimento',
+    'points': '+ pontos',
+    'logo': 'assets/images/jms.jpg',
+    'color': const Color(0xFF6B4423),
+  },
+  {
+    'name': 'Base Ferro',
+    'category': 'Ferragens para construção',
+    'points': '+ pontos',
+    'logo': 'assets/images/baseferro.jpg',
+    'color': const Color(0xFFB8860B),
+  },
+  {
+    'name': 'Atibaiashop',
+    'category': 'Materiais de Construção',
+    'points': '+ pontos',
+    'logo': 'assets/images/atibaiashop.jpg',
+    'color': const Color(0xFF2C5F41),
+  },
+  {
+    'name': 'Galves Construtora',
+    'category': 'Construtoras',
+    'points': '+ pontos',
+    'logo': 'assets/images/galves.jpg',
+    'color': const Color(0xFF6B4423),
+  },
+  {
+    'name': 'Decorarte',
+    'category': 'Tintas',
+    'points': '+ pontos',
+    'logo': 'assets/images/decorarte.jpg',
+    'color': const Color(0xFFB8860B),
+  },
+  {
+    'name': 'Gran House',
+    'category': 'Esquadrias',
+    'points': '+ pontos',
+    'logo': 'assets/images/granhouse.jpg',
+    'color': const Color(0xFF2C5F41),
+  },
+  {
+    'name': 'Rochas BR',
+    'category': 'Marmores, granitos e pedras',
+    'points': '+ pontos',
+    'logo': 'assets/images/rochasbr.jpg',
+    'color': const Color(0xFF6B4423),
+  },
+  {
+    'name': 'Casa Nova',
+    'category': 'Esquadrias',
+    'points': '+ pontos',
+    'logo': 'assets/images/casanova.jpg',
+    'color': const Color(0xFFB8860B),
+  },
+  {
+    'name': 'Pavertech',
+    'category': 'Pisos e blocos de concreto',
+    'points': '+ pontos',
+    'logo': 'assets/images/pavertech.jpg',
+    'color': const Color(0xFF2C5F41),
   },
 ];
 
@@ -190,14 +295,14 @@ class _PartnerCard extends StatefulWidget {
   final String name;
   final String category;
   final String points;
-  final IconData icon;
+  final String logo;
   final Color color;
 
   const _PartnerCard({
     required this.name,
     required this.category,
     required this.points,
-    required this.icon,
+    required this.logo,
     required this.color,
   });
 
@@ -208,22 +313,16 @@ class _PartnerCard extends StatefulWidget {
 class _PartnerCardState extends State<_PartnerCard> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _elevationAnimation;
   bool _isHovered = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-    _elevationAnimation = Tween<double>(begin: 5.0, end: 15.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _controller = AnimationController(duration: const Duration(milliseconds: 200), vsync: this);
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.03,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -247,96 +346,86 @@ class _PartnerCardState extends State<_PartnerCard> with SingleTickerProviderSta
       },
       child: ScaleTransition(
         scale: _scaleAnimation,
-        child: AnimatedBuilder(
-          animation: _elevationAnimation,
-          builder: (context, child) {
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final imageHeight = constraints.maxHeight * 0.6;
+            final contentHeight = constraints.maxHeight - imageHeight;
+
             return Container(
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: widget.color.withValues(alpha: 0.1),
-                    blurRadius: _elevationAnimation.value,
-                    offset: Offset(0, _elevationAnimation.value / 3),
+                    color: _isHovered
+                        ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                        : Colors.black.withValues(alpha: 0.08),
+                    blurRadius: _isHovered ? 15 : 8,
+                    offset: Offset(0, _isHovered ? 8 : 4),
                   ),
                 ],
               ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {},
-                  borderRadius: BorderRadius.circular(16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Icon
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: widget.color.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: widget.color.withValues(alpha: 0.2),
-                              width: 2,
-                            ),
-                          ),
-                          child: Icon(
-                            widget.icon,
-                            size: 30,
-                            color: widget.color,
-                          ),
+              child: Column(
+                children: [
+                  // Logo
+                  SizedBox(
+                    height: imageHeight,
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                      child: Image.asset(
+                        widget.logo,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+                          child: Icon(Icons.store, size: 60, color: theme.colorScheme.primary),
                         ),
-                        const SizedBox(height: 16),
-
-                        // Store Name
-                        Text(
-                          widget.name,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Category
-                        Text(
-                          widget.category,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 12),
-
-                        // Points Badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                widget.color,
-                                widget.color.withValues(alpha: 0.8),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            widget.points,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+
+                  // Content
+                  SizedBox(
+                    height: contentHeight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.name,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            widget.category,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const Spacer(),
+                          Text(
+                            widget.points,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           },
